@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    # Every hour at minute 17, UTC.
+    # Every hour at minute 17 UTC
     - cron: "17 * * * *"
 
 permissions:
@@ -27,6 +27,7 @@ jobs:
       PYTHONUNBUFFERED: "1"
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v6
 
@@ -56,7 +57,8 @@ jobs:
           ]
 
           missing = [
-              name for name in required
+              name
+              for name in required
               if not os.getenv(name)
           ]
 
@@ -65,9 +67,67 @@ jobs:
                   f"Missing required environment variables: {missing}"
               )
 
-          print("Production environment variables are present.")
-          print("Sensor ID:", os.environ["OPENAQ_SENSOR_ID"])
+          print("Required environment variables are present.")
+          print("OpenAQ sensor:", os.environ["OPENAQ_SENSOR_ID"])
           print("Hopsworks project:", os.environ["HOPSWORKS_PROJECT"])
+
+          print(
+              "OpenAQ key length:",
+              len(os.environ["OPENAQ_API_KEY"])
+          )
+
+          print(
+              "Hopsworks key length:",
+              len(os.environ["HOPSWORKS_API_KEY"])
+          )
+          PY
+
+      - name: Validate OpenAQ credentials
+        run: |
+          python - <<'PY'
+          import os
+          import requests
+
+          sensor_id = os.environ["OPENAQ_SENSOR_ID"]
+          api_key = os.environ["OPENAQ_API_KEY"]
+
+          url = (
+              f"https://api.openaq.org/v3/"
+              f"sensors/{sensor_id}/hours"
+          )
+
+          params = {
+              "datetime_from": "2026-08-23T00:00:00Z",
+              "datetime_to": "2026-08-23T03:00:00Z",
+              "limit": 10,
+              "page": 1,
+          }
+
+          response = requests.get(
+              url,
+              headers={"X-API-Key": api_key},
+              params=params,
+              timeout=30,
+          )
+
+          print("OpenAQ HTTP status:", response.status_code)
+
+          if response.status_code != 200:
+              raise RuntimeError(
+                  "OpenAQ authentication/request failed. "
+                  f"HTTP {response.status_code}"
+              )
+
+          data = response.json()
+
+          print(
+              "OpenAQ request successful."
+          )
+
+          print(
+              "Records returned:",
+              len(data.get("results", []))
+          )
           PY
 
       - name: Run hourly feature pipeline
