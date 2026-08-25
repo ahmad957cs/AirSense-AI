@@ -1,0 +1,448 @@
+2026-08-05 10:18:15.828 | INFO     | __main__:_request:56 - Fetching AQICN data for: Islamabad
+2026-08-05 10:23:02.920 | INFO     | __main__:_request:44 - Fetching AQICN data for Islamabad
+2026-08-05 10:23:04.062 | ERROR    | __main__:fetch_air_quality:67 - {'status': 'error', 'data': 'Invalid key'}
+2026-08-05 10:24:55.296 | INFO     | __main__:_request:44 - Fetching AQICN data for Islamabad
+2026-08-05 10:24:56.343 | ERROR    | __main__:fetch_air_quality:67 - {'status': 'error', 'data': 'Invalid key'}
+2026-08-05 10:28:14.122 | INFO     | __main__:_request:44 - Fetching AQICN data for Islamabad
+2026-08-05 10:28:15.466 | ERROR    | __main__:fetch_air_quality:67 - {'status': 'error', 'data': 'Invalid key'}
+2026-08-05 10:33:01.335 | INFO     | __main__:_request:44 - Fetching AQICN data for Islamabad
+2026-08-05 10:33:02.644 | SUCCESS  | __main__:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-05 10:52:34.584 | INFO     | __main__:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-05 10:52:37.015 | SUCCESS  | __main__:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-05 10:56:08.410 | INFO     | __main__:merge:32 - Fetching data from all sources...
+2026-08-05 10:56:08.410 | INFO     | src.ingestion.aqicn:_request:44 - Fetching AQICN data for Islamabad
+2026-08-05 10:56:09.968 | SUCCESS  | src.ingestion.aqicn:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-05 10:56:09.968 | INFO     | src.ingestion.openweather:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-05 10:56:11.187 | SUCCESS  | src.ingestion.openweather:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-05 10:56:11.187 | SUCCESS  | __main__:merge:93 - Data merged successfully.
+2026-08-07 20:24:49.230 | INFO     | __main__:merge:32 - Fetching data from all sources...
+2026-08-07 20:24:49.240 | INFO     | src.ingestion.aqicn:_request:44 - Fetching AQICN data for Islamabad
+2026-08-07 20:24:55.673 | SUCCESS  | src.ingestion.aqicn:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-07 20:24:55.775 | INFO     | src.ingestion.openweather:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-07 20:24:59.423 | SUCCESS  | src.ingestion.openweather:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-07 20:24:59.484 | SUCCESS  | __main__:merge:93 - Data merged successfully.
+2026-08-07 20:39:34.299 | INFO     | __main__:merge:32 - Fetching data from all sources...
+2026-08-07 20:39:34.300 | INFO     | src.ingestion.aqicn:_request:44 - Fetching AQICN data for Islamabad
+2026-08-07 20:39:36.078 | SUCCESS  | src.ingestion.aqicn:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-07 20:39:36.081 | INFO     | src.ingestion.openweather:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-07 20:39:37.750 | SUCCESS  | src.ingestion.openweather:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-07 20:39:37.750 | SUCCESS  | __main__:merge:93 - Data merged successfully.
+2026-08-07 20:43:17.504 | INFO     | __main__:save:34 - Collecting merged data...
+2026-08-07 20:43:17.505 | INFO     | src.ingestion.merger:merge:32 - Fetching data from all sources...
+2026-08-07 20:43:17.506 | INFO     | src.ingestion.aqicn:_request:44 - Fetching AQICN data for Islamabad
+2026-08-07 20:43:19.528 | SUCCESS  | src.ingestion.aqicn:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-07 20:43:19.530 | INFO     | src.ingestion.openweather:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-07 20:43:21.540 | SUCCESS  | src.ingestion.openweather:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-07 20:43:21.543 | SUCCESS  | src.ingestion.merger:merge:93 - Data merged successfully.
+2026-08-07 20:43:21.546 | SUCCESS  | __main__:save:53 - Raw data saved -> data\raw\2026-08-07_15-43-21.json
+2026-08-07 20:49:49.067 | INFO     | __main__:save:34 - Collecting merged data...
+2026-08-07 20:49:49.067 | INFO     | src.ingestion.merger:merge:32 - Fetching data from all sources...
+2026-08-07 20:49:49.068 | INFO     | src.ingestion.aqicn:_request:44 - Fetching AQICN data for Islamabad
+2026-08-07 20:49:50.699 | SUCCESS  | src.ingestion.aqicn:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-07 20:49:50.703 | INFO     | src.ingestion.openweather:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-07 20:49:52.561 | SUCCESS  | src.ingestion.openweather:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-07 20:49:52.563 | SUCCESS  | src.ingestion.merger:merge:93 - Data merged successfully.
+2026-08-07 20:49:52.566 | SUCCESS  | __main__:save:53 - Raw data saved -> data\raw\2026-08-07_15-49-52.json
+2026-08-07 20:54:06.649 | INFO     | __main__:build:37 - Reading raw JSON files...
+2026-08-07 20:54:06.744 | SUCCESS  | __main__:build:79 - Historical dataset saved -> data\processed\historical_data.csv
+2026-08-07 20:54:06.744 | INFO     | __main__:build:81 - Total records : 1
+2026-08-07 20:54:06.745 | INFO     | __main__:build:83 - Total columns : 24
+2026-08-10 10:09:00.431 | INFO     | __main__:_request:44 - Fetching AQICN data for Peshawar
+2026-08-10 10:09:02.836 | SUCCESS  | __main__:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-10 10:09:32.180 | INFO     | __main__:_request:65 - Fetching OpenWeather data for Peshawar
+2026-08-10 10:09:41.204 | SUCCESS  | __main__:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-10 10:10:00.234 | INFO     | __main__:merge:32 - Fetching data from all sources...
+2026-08-10 10:10:00.235 | INFO     | src.ingestion.aqicn:_request:44 - Fetching AQICN data for Peshawar
+2026-08-10 10:10:02.553 | SUCCESS  | src.ingestion.aqicn:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-10 10:10:02.553 | INFO     | src.ingestion.openweather:_request:65 - Fetching OpenWeather data for Peshawar
+2026-08-10 10:10:04.236 | SUCCESS  | src.ingestion.openweather:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-10 10:10:04.238 | SUCCESS  | __main__:merge:93 - Data merged successfully.
+2026-08-10 10:14:56.803 | INFO     | __main__:_request:44 - Fetching AQICN data for Islamabad
+2026-08-10 10:15:00.478 | SUCCESS  | __main__:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-10 10:15:17.102 | INFO     | __main__:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-10 10:15:20.955 | SUCCESS  | __main__:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-10 10:15:40.533 | INFO     | __main__:merge:32 - Fetching data from all sources...
+2026-08-10 10:15:40.534 | INFO     | src.ingestion.aqicn:_request:44 - Fetching AQICN data for Islamabad
+2026-08-10 10:15:43.293 | SUCCESS  | src.ingestion.aqicn:fetch_air_quality:117 - AQICN data fetched successfully.
+2026-08-10 10:15:43.299 | INFO     | src.ingestion.openweather:_request:65 - Fetching OpenWeather data for Islamabad
+2026-08-10 10:15:44.849 | SUCCESS  | src.ingestion.openweather:fetch_weather:142 - OpenWeather data fetched successfully.
+2026-08-10 10:15:44.863 | SUCCESS  | __main__:merge:93 - Data merged successfully.
+2026-08-10 11:16:01.810 | INFO     | __main__:validate_config:66 - OpenAQ sensor ID: 25066
+2026-08-10 11:16:01.810 | INFO     | __main__:validate_config:70 - Historical period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-10 11:16:01.810 | INFO     | __main__:run_backfill:171 - Starting OpenAQ historical backfill...
+2026-08-10 11:16:01.810 | INFO     | __main__:run_backfill:175 - Sensor: 25066
+2026-08-10 11:16:01.810 | INFO     | __main__:run_backfill:179 - Period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-10 11:16:01.810 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 1...
+2026-08-10 11:16:03.848 | INFO     | __main__:run_backfill:218 - Page 1: 96 records fetched | Total: 96
+2026-08-10 11:16:03.854 | INFO     | __main__:run_backfill:227 - Final page reached.
+2026-08-10 11:16:03.955 | INFO     | __main__:run_backfill:374 - Historical backfill completed successfully.
+2026-08-10 11:16:03.955 | INFO     | __main__:run_backfill:378 - Total records: 96
+2026-08-10 11:16:03.963 | INFO     | __main__:run_backfill:382 - Date range: 2025-01-01 00:00:00+00:00 → 2025-01-05 03:00:00+00:00
+2026-08-10 11:16:03.988 | INFO     | __main__:run_backfill:388 - Output: data/processed\historical_pm25.csv
+2026-08-10 11:18:23.840 | INFO     | __main__:validate_config:66 - OpenAQ sensor ID: 25066
+2026-08-10 11:18:23.840 | INFO     | __main__:validate_config:70 - Historical period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-10 11:18:23.840 | INFO     | __main__:run_backfill:171 - Starting OpenAQ historical backfill...
+2026-08-10 11:18:23.840 | INFO     | __main__:run_backfill:175 - Sensor: 25066
+2026-08-10 11:18:23.840 | INFO     | __main__:run_backfill:179 - Period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-10 11:18:23.840 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 1...
+2026-08-10 11:18:25.721 | INFO     | __main__:run_backfill:218 - Page 1: 96 records fetched | Total: 96
+2026-08-10 11:18:25.721 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:25.721 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 2...
+2026-08-10 11:18:27.604 | INFO     | __main__:run_backfill:218 - Page 2: 100 records fetched | Total: 196
+2026-08-10 11:18:27.604 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:27.604 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 3...
+2026-08-10 11:18:29.500 | INFO     | __main__:run_backfill:218 - Page 3: 100 records fetched | Total: 296
+2026-08-10 11:18:29.500 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:29.500 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 4...
+2026-08-10 11:18:30.807 | INFO     | __main__:run_backfill:218 - Page 4: 99 records fetched | Total: 395
+2026-08-10 11:18:30.807 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:30.807 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 5...
+2026-08-10 11:18:32.797 | INFO     | __main__:run_backfill:218 - Page 5: 92 records fetched | Total: 487
+2026-08-10 11:18:32.862 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:32.872 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 6...
+2026-08-10 11:18:34.247 | INFO     | __main__:run_backfill:218 - Page 6: 98 records fetched | Total: 585
+2026-08-10 11:18:34.247 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:34.247 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 7...
+2026-08-10 11:18:36.414 | INFO     | __main__:run_backfill:218 - Page 7: 100 records fetched | Total: 685
+2026-08-10 11:18:36.414 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:36.414 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 8...
+2026-08-10 11:18:37.796 | INFO     | __main__:run_backfill:218 - Page 8: 95 records fetched | Total: 780
+2026-08-10 11:18:37.796 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:37.796 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 9...
+2026-08-10 11:18:39.332 | INFO     | __main__:run_backfill:218 - Page 9: 97 records fetched | Total: 877
+2026-08-10 11:18:39.337 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:39.338 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 10...
+2026-08-10 11:18:40.930 | INFO     | __main__:run_backfill:218 - Page 10: 98 records fetched | Total: 975
+2026-08-10 11:18:40.930 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:40.930 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 11...
+2026-08-10 11:18:42.646 | INFO     | __main__:run_backfill:218 - Page 11: 99 records fetched | Total: 1074
+2026-08-10 11:18:42.646 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:42.646 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 12...
+2026-08-10 11:18:47.462 | INFO     | __main__:run_backfill:218 - Page 12: 99 records fetched | Total: 1173
+2026-08-10 11:18:47.462 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:47.462 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 13...
+2026-08-10 11:18:49.879 | INFO     | __main__:run_backfill:218 - Page 13: 98 records fetched | Total: 1271
+2026-08-10 11:18:49.879 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:49.879 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 14...
+2026-08-10 11:18:51.793 | INFO     | __main__:run_backfill:218 - Page 14: 98 records fetched | Total: 1369
+2026-08-10 11:18:51.793 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:51.793 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 15...
+2026-08-10 11:18:58.675 | INFO     | __main__:run_backfill:218 - Page 15: 98 records fetched | Total: 1467
+2026-08-10 11:18:58.675 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-10 11:18:58.675 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 16...
+2026-08-10 11:19:02.506 | INFO     | __main__:run_backfill:210 - No more records found at page 16.
+2026-08-10 11:19:02.577 | INFO     | __main__:run_backfill:378 - Historical backfill completed successfully.
+2026-08-10 11:19:02.578 | INFO     | __main__:run_backfill:382 - Total records: 1467
+2026-08-10 11:19:02.579 | INFO     | __main__:run_backfill:386 - Date range: 2025-01-01 00:00:00+00:00 → 2025-03-04 11:00:00+00:00
+2026-08-10 11:19:02.579 | INFO     | __main__:run_backfill:392 - Output: data/processed\historical_pm25.csv
+2026-08-11 11:06:25.926 | INFO     | __main__:validate_config:66 - OpenAQ sensor ID: 25066
+2026-08-11 11:06:25.931 | INFO     | __main__:validate_config:70 - Historical period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:06:25.933 | INFO     | __main__:run_backfill:171 - Starting OpenAQ historical backfill...
+2026-08-11 11:06:25.933 | INFO     | __main__:run_backfill:175 - Sensor: 25066
+2026-08-11 11:06:25.934 | INFO     | __main__:run_backfill:179 - Period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:06:25.934 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 1...
+2026-08-11 11:06:28.666 | INFO     | __main__:run_backfill:218 - Page 1: 96 records fetched | Total: 96
+2026-08-11 11:06:28.776 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:28.965 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 2...
+2026-08-11 11:06:32.420 | INFO     | __main__:run_backfill:218 - Page 2: 100 records fetched | Total: 196
+2026-08-11 11:06:32.456 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:32.456 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 3...
+2026-08-11 11:06:35.102 | INFO     | __main__:run_backfill:218 - Page 3: 100 records fetched | Total: 296
+2026-08-11 11:06:35.106 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:35.113 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 4...
+2026-08-11 11:06:38.240 | INFO     | __main__:run_backfill:218 - Page 4: 99 records fetched | Total: 395
+2026-08-11 11:06:38.277 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:38.294 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 5...
+2026-08-11 11:06:41.888 | INFO     | __main__:run_backfill:218 - Page 5: 92 records fetched | Total: 487
+2026-08-11 11:06:41.889 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:41.890 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 6...
+2026-08-11 11:06:47.692 | INFO     | __main__:run_backfill:218 - Page 6: 98 records fetched | Total: 585
+2026-08-11 11:06:47.750 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:47.937 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 7...
+2026-08-11 11:06:52.873 | INFO     | __main__:run_backfill:218 - Page 7: 100 records fetched | Total: 685
+2026-08-11 11:06:52.984 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:52.985 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 8...
+2026-08-11 11:06:57.492 | INFO     | __main__:run_backfill:218 - Page 8: 95 records fetched | Total: 780
+2026-08-11 11:06:57.576 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:06:57.769 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 9...
+2026-08-11 11:07:02.411 | INFO     | __main__:run_backfill:218 - Page 9: 97 records fetched | Total: 877
+2026-08-11 11:07:02.501 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:07:02.651 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 10...
+2026-08-11 11:07:07.201 | INFO     | __main__:run_backfill:218 - Page 10: 98 records fetched | Total: 975
+2026-08-11 11:07:07.293 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:07:07.294 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 11...
+2026-08-11 11:07:12.295 | INFO     | __main__:run_backfill:218 - Page 11: 99 records fetched | Total: 1074
+2026-08-11 11:07:12.412 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:07:12.413 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 12...
+2026-08-11 11:07:17.639 | INFO     | __main__:run_backfill:218 - Page 12: 99 records fetched | Total: 1173
+2026-08-11 11:07:17.750 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:07:17.751 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 13...
+2026-08-11 11:07:22.753 | INFO     | __main__:run_backfill:218 - Page 13: 98 records fetched | Total: 1271
+2026-08-11 11:07:22.845 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:07:22.846 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 14...
+2026-08-11 11:07:27.711 | INFO     | __main__:run_backfill:218 - Page 14: 98 records fetched | Total: 1369
+2026-08-11 11:07:27.782 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:07:27.782 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 15...
+2026-08-11 11:07:32.826 | INFO     | __main__:run_backfill:218 - Page 15: 98 records fetched | Total: 1467
+2026-08-11 11:07:32.928 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:07:32.929 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 16...
+2026-08-11 11:07:36.956 | INFO     | __main__:run_backfill:210 - No more records found at page 16.
+2026-08-11 11:07:38.260 | INFO     | __main__:run_backfill:378 - Historical backfill completed successfully.
+2026-08-11 11:07:38.436 | INFO     | __main__:run_backfill:382 - Total records: 1467
+2026-08-11 11:07:38.592 | INFO     | __main__:run_backfill:386 - Date range: 2025-01-01 00:00:00+00:00 → 2025-03-04 11:00:00+00:00
+2026-08-11 11:07:38.758 | INFO     | __main__:run_backfill:392 - Output: data/processed\historical_pm25.csv
+2026-08-11 11:19:31.060 | INFO     | __main__:validate_config:66 - OpenAQ sensor ID: 25066
+2026-08-11 11:19:31.060 | INFO     | __main__:validate_config:70 - Historical period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:19:31.065 | INFO     | __main__:run_backfill:171 - Starting OpenAQ historical backfill...
+2026-08-11 11:19:31.067 | INFO     | __main__:run_backfill:175 - Sensor: 25066
+2026-08-11 11:19:31.068 | INFO     | __main__:run_backfill:179 - Period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:19:31.069 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 1...
+2026-08-11 11:19:34.158 | INFO     | __main__:run_backfill:218 - Page 1: 96 records fetched | Total: 96
+2026-08-11 11:19:34.168 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:34.168 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 2...
+2026-08-11 11:19:36.177 | INFO     | __main__:run_backfill:218 - Page 2: 100 records fetched | Total: 196
+2026-08-11 11:19:36.180 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:36.181 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 3...
+2026-08-11 11:19:38.150 | INFO     | __main__:run_backfill:218 - Page 3: 100 records fetched | Total: 296
+2026-08-11 11:19:38.157 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:38.157 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 4...
+2026-08-11 11:19:40.545 | INFO     | __main__:run_backfill:218 - Page 4: 99 records fetched | Total: 395
+2026-08-11 11:19:40.547 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:40.551 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 5...
+2026-08-11 11:19:42.121 | INFO     | __main__:run_backfill:218 - Page 5: 92 records fetched | Total: 487
+2026-08-11 11:19:42.130 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:42.130 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 6...
+2026-08-11 11:19:44.733 | INFO     | __main__:run_backfill:218 - Page 6: 98 records fetched | Total: 585
+2026-08-11 11:19:44.733 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:44.734 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 7...
+2026-08-11 11:19:47.485 | INFO     | __main__:run_backfill:218 - Page 7: 100 records fetched | Total: 685
+2026-08-11 11:19:47.488 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:47.488 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 8...
+2026-08-11 11:19:50.074 | INFO     | __main__:run_backfill:218 - Page 8: 95 records fetched | Total: 780
+2026-08-11 11:19:50.074 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:50.074 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 9...
+2026-08-11 11:19:52.882 | INFO     | __main__:run_backfill:218 - Page 9: 97 records fetched | Total: 877
+2026-08-11 11:19:52.886 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:52.886 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 10...
+2026-08-11 11:19:54.658 | INFO     | __main__:run_backfill:218 - Page 10: 98 records fetched | Total: 975
+2026-08-11 11:19:54.659 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:54.660 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 11...
+2026-08-11 11:19:57.080 | INFO     | __main__:run_backfill:218 - Page 11: 99 records fetched | Total: 1074
+2026-08-11 11:19:57.081 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:19:57.082 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 12...
+2026-08-11 11:20:00.497 | INFO     | __main__:run_backfill:218 - Page 12: 99 records fetched | Total: 1173
+2026-08-11 11:20:00.512 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:20:00.513 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 13...
+2026-08-11 11:20:02.865 | INFO     | __main__:run_backfill:218 - Page 13: 98 records fetched | Total: 1271
+2026-08-11 11:20:02.867 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:20:02.867 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 14...
+2026-08-11 11:20:05.823 | INFO     | __main__:run_backfill:218 - Page 14: 98 records fetched | Total: 1369
+2026-08-11 11:20:05.823 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:20:05.824 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 15...
+2026-08-11 11:20:09.347 | INFO     | __main__:run_backfill:218 - Page 15: 98 records fetched | Total: 1467
+2026-08-11 11:20:09.351 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:20:09.351 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 16...
+2026-08-11 11:20:11.762 | INFO     | __main__:run_backfill:210 - No more records found at page 16.
+2026-08-11 11:20:11.901 | INFO     | __main__:run_backfill:378 - Historical backfill completed successfully.
+2026-08-11 11:20:11.903 | INFO     | __main__:run_backfill:382 - Total records: 1467
+2026-08-11 11:20:11.907 | INFO     | __main__:run_backfill:386 - Date range: 2025-01-01 00:00:00+00:00 → 2025-03-04 11:00:00+00:00
+2026-08-11 11:20:11.909 | INFO     | __main__:run_backfill:392 - Output: data/processed\historical_pm25.csv
+2026-08-11 11:23:22.312 | INFO     | __main__:validate_config:66 - OpenAQ sensor ID: 25066
+2026-08-11 11:23:22.319 | INFO     | __main__:validate_config:70 - Historical period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:23:22.319 | INFO     | __main__:run_backfill:171 - Starting OpenAQ historical backfill...
+2026-08-11 11:23:22.320 | INFO     | __main__:run_backfill:175 - Sensor: 25066
+2026-08-11 11:23:22.320 | INFO     | __main__:run_backfill:179 - Period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:23:22.320 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 1...
+2026-08-11 11:23:24.671 | INFO     | __main__:run_backfill:218 - Page 1: 96 records fetched | Total: 96
+2026-08-11 11:23:24.671 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:24.683 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 2...
+2026-08-11 11:23:27.140 | INFO     | __main__:run_backfill:218 - Page 2: 100 records fetched | Total: 196
+2026-08-11 11:23:27.143 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:27.143 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 3...
+2026-08-11 11:23:28.875 | INFO     | __main__:run_backfill:218 - Page 3: 100 records fetched | Total: 296
+2026-08-11 11:23:28.934 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:28.935 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 4...
+2026-08-11 11:23:30.685 | INFO     | __main__:run_backfill:218 - Page 4: 99 records fetched | Total: 395
+2026-08-11 11:23:30.686 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:30.687 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 5...
+2026-08-11 11:23:34.364 | INFO     | __main__:run_backfill:218 - Page 5: 92 records fetched | Total: 487
+2026-08-11 11:23:34.365 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:34.365 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 6...
+2026-08-11 11:23:37.014 | INFO     | __main__:run_backfill:218 - Page 6: 98 records fetched | Total: 585
+2026-08-11 11:23:37.025 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:37.026 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 7...
+2026-08-11 11:23:39.566 | INFO     | __main__:run_backfill:218 - Page 7: 100 records fetched | Total: 685
+2026-08-11 11:23:39.566 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:39.568 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 8...
+2026-08-11 11:23:42.349 | INFO     | __main__:run_backfill:218 - Page 8: 95 records fetched | Total: 780
+2026-08-11 11:23:42.350 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:42.352 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 9...
+2026-08-11 11:23:45.257 | INFO     | __main__:run_backfill:218 - Page 9: 97 records fetched | Total: 877
+2026-08-11 11:23:45.259 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:45.261 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 10...
+2026-08-11 11:23:48.226 | INFO     | __main__:run_backfill:218 - Page 10: 98 records fetched | Total: 975
+2026-08-11 11:23:48.226 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:48.226 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 11...
+2026-08-11 11:23:51.732 | INFO     | __main__:run_backfill:218 - Page 11: 99 records fetched | Total: 1074
+2026-08-11 11:23:51.735 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:51.737 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 12...
+2026-08-11 11:23:54.637 | INFO     | __main__:run_backfill:218 - Page 12: 99 records fetched | Total: 1173
+2026-08-11 11:23:54.640 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:54.640 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 13...
+2026-08-11 11:23:57.652 | INFO     | __main__:run_backfill:218 - Page 13: 98 records fetched | Total: 1271
+2026-08-11 11:23:57.656 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:23:57.659 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 14...
+2026-08-11 11:24:01.188 | INFO     | __main__:run_backfill:218 - Page 14: 98 records fetched | Total: 1369
+2026-08-11 11:24:01.198 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:24:01.199 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 15...
+2026-08-11 11:24:04.615 | INFO     | __main__:run_backfill:218 - Page 15: 98 records fetched | Total: 1467
+2026-08-11 11:24:04.698 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:24:04.791 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 16...
+2026-08-11 11:24:08.669 | INFO     | __main__:run_backfill:210 - No more records found at page 16.
+2026-08-11 11:24:08.811 | INFO     | __main__:run_backfill:378 - Historical backfill completed successfully.
+2026-08-11 11:24:08.812 | INFO     | __main__:run_backfill:382 - Total records: 1467
+2026-08-11 11:24:08.813 | INFO     | __main__:run_backfill:386 - Date range: 2025-01-01 00:00:00+00:00 → 2025-03-04 11:00:00+00:00
+2026-08-11 11:24:08.818 | INFO     | __main__:run_backfill:392 - Output: data/processed\historical_pm25.csv
+2026-08-11 11:25:20.281 | INFO     | __main__:validate_config:66 - OpenAQ sensor ID: 13137731
+2026-08-11 11:25:20.291 | INFO     | __main__:validate_config:70 - Historical period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:25:20.292 | INFO     | __main__:run_backfill:171 - Starting OpenAQ historical backfill...
+2026-08-11 11:25:20.292 | INFO     | __main__:run_backfill:175 - Sensor: 13137731
+2026-08-11 11:25:20.292 | INFO     | __main__:run_backfill:179 - Period: 2025-01-01T00:00:00Z → 2026-08-10T00:00:00Z
+2026-08-11 11:25:20.293 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 1...
+2026-08-11 11:25:22.492 | INFO     | __main__:run_backfill:218 - Page 1: 100 records fetched | Total: 100
+2026-08-11 11:25:22.492 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:22.499 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 2...
+2026-08-11 11:25:24.883 | INFO     | __main__:run_backfill:218 - Page 2: 100 records fetched | Total: 200
+2026-08-11 11:25:24.883 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:24.885 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 3...
+2026-08-11 11:25:26.289 | INFO     | __main__:run_backfill:218 - Page 3: 100 records fetched | Total: 300
+2026-08-11 11:25:26.291 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:26.292 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 4...
+2026-08-11 11:25:28.646 | INFO     | __main__:run_backfill:218 - Page 4: 100 records fetched | Total: 400
+2026-08-11 11:25:28.649 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:28.649 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 5...
+2026-08-11 11:25:30.854 | INFO     | __main__:run_backfill:218 - Page 5: 100 records fetched | Total: 500
+2026-08-11 11:25:30.855 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:30.855 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 6...
+2026-08-11 11:25:33.228 | INFO     | __main__:run_backfill:218 - Page 6: 100 records fetched | Total: 600
+2026-08-11 11:25:33.231 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:33.232 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 7...
+2026-08-11 11:25:34.792 | INFO     | __main__:run_backfill:218 - Page 7: 100 records fetched | Total: 700
+2026-08-11 11:25:34.794 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:34.794 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 8...
+2026-08-11 11:25:36.267 | INFO     | __main__:run_backfill:218 - Page 8: 100 records fetched | Total: 800
+2026-08-11 11:25:36.275 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:36.284 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 9...
+2026-08-11 11:25:38.549 | INFO     | __main__:run_backfill:218 - Page 9: 100 records fetched | Total: 900
+2026-08-11 11:25:38.559 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:38.559 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 10...
+2026-08-11 11:25:41.318 | INFO     | __main__:run_backfill:218 - Page 10: 100 records fetched | Total: 1000
+2026-08-11 11:25:41.327 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:41.328 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 11...
+2026-08-11 11:25:43.937 | INFO     | __main__:run_backfill:218 - Page 11: 100 records fetched | Total: 1100
+2026-08-11 11:25:43.945 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:43.945 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 12...
+2026-08-11 11:25:46.666 | INFO     | __main__:run_backfill:218 - Page 12: 100 records fetched | Total: 1200
+2026-08-11 11:25:46.673 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:46.673 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 13...
+2026-08-11 11:25:49.426 | INFO     | __main__:run_backfill:218 - Page 13: 100 records fetched | Total: 1300
+2026-08-11 11:25:49.434 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:49.435 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 14...
+2026-08-11 11:25:52.485 | INFO     | __main__:run_backfill:218 - Page 14: 100 records fetched | Total: 1400
+2026-08-11 11:25:52.488 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:52.488 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 15...
+2026-08-11 11:25:54.041 | INFO     | __main__:run_backfill:218 - Page 15: 100 records fetched | Total: 1500
+2026-08-11 11:25:54.041 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:54.052 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 16...
+2026-08-11 11:25:56.544 | INFO     | __main__:run_backfill:218 - Page 16: 100 records fetched | Total: 1600
+2026-08-11 11:25:56.555 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:56.556 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 17...
+2026-08-11 11:25:59.253 | INFO     | __main__:run_backfill:218 - Page 17: 100 records fetched | Total: 1700
+2026-08-11 11:25:59.265 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:25:59.266 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 18...
+2026-08-11 11:26:02.275 | INFO     | __main__:run_backfill:218 - Page 18: 100 records fetched | Total: 1800
+2026-08-11 11:26:02.275 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:02.287 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 19...
+2026-08-11 11:26:05.028 | INFO     | __main__:run_backfill:218 - Page 19: 100 records fetched | Total: 1900
+2026-08-11 11:26:05.039 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:05.040 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 20...
+2026-08-11 11:26:07.053 | INFO     | __main__:run_backfill:218 - Page 20: 100 records fetched | Total: 2000
+2026-08-11 11:26:07.054 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:07.055 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 21...
+2026-08-11 11:26:10.038 | INFO     | __main__:run_backfill:218 - Page 21: 100 records fetched | Total: 2100
+2026-08-11 11:26:10.039 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:10.040 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 22...
+2026-08-11 11:26:12.838 | INFO     | __main__:run_backfill:218 - Page 22: 100 records fetched | Total: 2200
+2026-08-11 11:26:12.841 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:12.858 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 23...
+2026-08-11 11:26:14.934 | INFO     | __main__:run_backfill:218 - Page 23: 100 records fetched | Total: 2300
+2026-08-11 11:26:14.963 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:15.013 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 24...
+2026-08-11 11:26:17.647 | INFO     | __main__:run_backfill:218 - Page 24: 100 records fetched | Total: 2400
+2026-08-11 11:26:17.663 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:17.663 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 25...
+2026-08-11 11:26:21.290 | INFO     | __main__:run_backfill:218 - Page 25: 100 records fetched | Total: 2500
+2026-08-11 11:26:21.293 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:21.295 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 26...
+2026-08-11 11:26:24.647 | INFO     | __main__:run_backfill:218 - Page 26: 100 records fetched | Total: 2600
+2026-08-11 11:26:24.649 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:24.651 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 27...
+2026-08-11 11:26:27.781 | INFO     | __main__:run_backfill:218 - Page 27: 100 records fetched | Total: 2700
+2026-08-11 11:26:27.782 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:27.784 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 28...
+2026-08-11 11:26:30.280 | INFO     | __main__:run_backfill:218 - Page 28: 100 records fetched | Total: 2800
+2026-08-11 11:26:30.291 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:30.292 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 29...
+2026-08-11 11:26:33.087 | INFO     | __main__:run_backfill:218 - Page 29: 100 records fetched | Total: 2900
+2026-08-11 11:26:33.099 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:33.100 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 30...
+2026-08-11 11:26:35.209 | INFO     | __main__:run_backfill:218 - Page 30: 100 records fetched | Total: 3000
+2026-08-11 11:26:35.210 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:35.210 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 31...
+2026-08-11 11:26:38.126 | INFO     | __main__:run_backfill:218 - Page 31: 100 records fetched | Total: 3100
+2026-08-11 11:26:38.129 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:38.129 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 32...
+2026-08-11 11:26:41.483 | INFO     | __main__:run_backfill:218 - Page 32: 100 records fetched | Total: 3200
+2026-08-11 11:26:41.494 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:41.494 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 33...
+2026-08-11 11:26:44.067 | INFO     | __main__:run_backfill:218 - Page 33: 100 records fetched | Total: 3300
+2026-08-11 11:26:44.067 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:44.076 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 34...
+2026-08-11 11:26:46.669 | INFO     | __main__:run_backfill:218 - Page 34: 100 records fetched | Total: 3400
+2026-08-11 11:26:46.669 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:46.675 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 35...
+2026-08-11 11:26:49.908 | INFO     | __main__:run_backfill:218 - Page 35: 100 records fetched | Total: 3500
+2026-08-11 11:26:49.917 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:49.917 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 36...
+2026-08-11 11:26:52.982 | INFO     | __main__:run_backfill:218 - Page 36: 100 records fetched | Total: 3600
+2026-08-11 11:26:52.986 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:52.986 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 37...
+2026-08-11 11:26:56.083 | INFO     | __main__:run_backfill:218 - Page 37: 100 records fetched | Total: 3700
+2026-08-11 11:26:56.083 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:56.088 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 38...
+2026-08-11 11:26:58.384 | INFO     | __main__:run_backfill:218 - Page 38: 100 records fetched | Total: 3800
+2026-08-11 11:26:58.386 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:26:58.387 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 39...
+2026-08-11 11:27:00.922 | INFO     | __main__:run_backfill:218 - Page 39: 100 records fetched | Total: 3900
+2026-08-11 11:27:00.923 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:27:00.923 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 40...
+2026-08-11 11:27:03.455 | INFO     | __main__:run_backfill:218 - Page 40: 100 records fetched | Total: 4000
+2026-08-11 11:27:03.465 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:27:03.465 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 41...
+2026-08-11 11:27:05.914 | INFO     | __main__:run_backfill:218 - Page 41: 100 records fetched | Total: 4100
+2026-08-11 11:27:05.914 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:27:05.924 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 42...
+2026-08-11 11:27:08.452 | INFO     | __main__:run_backfill:218 - Page 42: 100 records fetched | Total: 4200
+2026-08-11 11:27:08.462 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:27:08.462 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 43...
+2026-08-11 11:27:11.907 | INFO     | __main__:run_backfill:218 - Page 43: 100 records fetched | Total: 4300
+2026-08-11 11:27:11.908 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: >100
+2026-08-11 11:27:11.910 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 44...
+2026-08-11 11:27:15.232 | INFO     | __main__:run_backfill:218 - Page 44: 90 records fetched | Total: 4390
+2026-08-11 11:27:15.241 | INFO     | __main__:run_backfill:234 - OpenAQ reported total: 90
+2026-08-11 11:27:15.242 | INFO     | __main__:run_backfill:189 - Fetching OpenAQ page 45...
+2026-08-11 11:27:18.133 | INFO     | __main__:run_backfill:210 - No more records found at page 45.
+2026-08-11 11:27:18.499 | INFO     | __main__:run_backfill:378 - Historical backfill completed successfully.
+2026-08-11 11:27:18.499 | INFO     | __main__:run_backfill:382 - Total records: 4390
+2026-08-11 11:27:18.501 | INFO     | __main__:run_backfill:386 - Date range: 2025-05-24 16:00:00+00:00 → 2026-08-09 23:00:00+00:00
+2026-08-11 11:27:18.501 | INFO     | __main__:run_backfill:392 - Output: data/processed\historical_pm25.csv

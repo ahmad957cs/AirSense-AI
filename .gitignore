@@ -1,0 +1,18 @@
+@"
+.venv/
+.env
+.hopsworks/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Large ML artifacts
+*.joblib
+*.pkl
+*.h5
+
+# Local generated data/artifacts
+data/raw/
+data/processed/
+artifacts/
+"@ | Set-Content .gitignore
