@@ -87,25 +87,26 @@ jobs:
           import os
           import requests
 
+          api_key = os.environ.get("OPENAQ_API_KEY", "")
           sensor_id = os.environ["OPENAQ_SENSOR_ID"]
-          api_key = os.environ["OPENAQ_API_KEY"]
+
+          print("GitHub OpenAQ key present:", bool(api_key))
+          print("GitHub OpenAQ key length:", len(api_key))
 
           url = (
               f"https://api.openaq.org/v3/"
               f"sensors/{sensor_id}/hours"
           )
 
-          params = {
-              "datetime_from": "2026-08-23T00:00:00Z",
-              "datetime_to": "2026-08-23T03:00:00Z",
-              "limit": 10,
-              "page": 1,
-          }
-
           response = requests.get(
               url,
               headers={"X-API-Key": api_key},
-              params=params,
+              params={
+                  "datetime_from": "2026-08-23T00:00:00Z",
+                  "datetime_to": "2026-08-23T03:00:00Z",
+                  "limit": 10,
+                  "page": 1,
+              },
               timeout=30,
           )
 
@@ -113,19 +114,13 @@ jobs:
 
           if response.status_code != 200:
               raise RuntimeError(
-                  "OpenAQ authentication/request failed. "
-                  f"HTTP {response.status_code}"
+                  f"OpenAQ request failed: HTTP {response.status_code}"
               )
 
-          data = response.json()
-
-          print(
-              "OpenAQ request successful."
-          )
-
+          print("OpenAQ request successful.")
           print(
               "Records returned:",
-              len(data.get("results", []))
+              len(response.json().get("results", []))
           )
           PY
 
