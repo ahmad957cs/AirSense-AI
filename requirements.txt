@@ -69,5 +69,3 @@ websockets==16.1.1
 win32_setctime==1.2.0
 
 hopsworks==5.0.4
-hopsworks==5.0.4
-hopsworks==5.0.4
