@@ -1,313 +1,457 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
-import pandas as pd
 import hopsworks
+import pandas as pd
 from dotenv import load_dotenv
 
 
 # ============================================================
 # AirSense-AI
-# Training Dataset Creation
+# Build supervised training data from Feature Group v3
 # ============================================================
-
-# ------------------------------------------------------------
-# Configuration
-# ------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-ENV_PATH = PROJECT_ROOT / ".env"
-
-FEATURE_VIEW_NAME = "pm25_forecasting_view"
-FEATURE_VIEW_VERSION = 1
-
-TRAINING_DATASET_VERSION = 1
-
-OUTPUT_DIR = PROJECT_ROOT / "data" / "processed"
-OUTPUT_X_PATH = OUTPUT_DIR / "training_features.csv"
-OUTPUT_Y_PATH = OUTPUT_DIR / "training_target.csv"
-
-
-# ------------------------------------------------------------
-# Load environment
-# ------------------------------------------------------------
-
-load_dotenv(ENV_PATH)
+load_dotenv(PROJECT_ROOT / ".env")
 
 HOPSWORKS_HOST = os.getenv("HOPSWORKS_HOST")
 HOPSWORKS_PROJECT = os.getenv("HOPSWORKS_PROJECT")
 HOPSWORKS_API_KEY = os.getenv("HOPSWORKS_API_KEY")
-HOPSWORKS_CERT_FOLDER = os.getenv("HOPSWORKS_CERT_FOLDER")
 
+FEATURE_GROUP_NAME = "pm25_hourly_features"
+FEATURE_GROUP_VERSION = 3
 
-if not HOPSWORKS_HOST:
-    raise ValueError("HOPSWORKS_HOST not found in .env")
+OUTPUT_DIR = (
+    PROJECT_ROOT
+    / "data"
+    / "processed"
+)
 
-if not HOPSWORKS_PROJECT:
-    raise ValueError("HOPSWORKS_PROJECT not found in .env")
+OUTPUT_X_PATH = (
+    OUTPUT_DIR
+    / "training_features.csv"
+)
 
-if not HOPSWORKS_API_KEY:
-    raise ValueError("HOPSWORKS_API_KEY not found in .env")
+OUTPUT_Y_PATH = (
+    OUTPUT_DIR
+    / "training_target.csv"
+)
 
 
 # ------------------------------------------------------------
-# Main
+# Exact model feature schema
 # ------------------------------------------------------------
 
-def main():
+FEATURE_COLUMNS = [
+    "coverage_percent",
+    "minimum",
+    "maximum",
+    "average",
+    "original_observation",
+    "hour",
+    "day_of_week",
+    "day_of_month",
+    "month",
+    "day_of_year",
+    "week_of_year",
+    "is_weekend",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "pm25_lag_1h",
+    "pm25_lag_3h",
+    "pm25_lag_6h",
+    "pm25_lag_12h",
+    "pm25_lag_24h",
+    "pm25_lag_48h",
+    "pm25_lag_72h",
+    "pm25_rolling_mean_3h",
+    "pm25_rolling_std_3h",
+    "pm25_rolling_min_3h",
+    "pm25_rolling_max_3h",
+    "pm25_rolling_mean_6h",
+    "pm25_rolling_std_6h",
+    "pm25_rolling_min_6h",
+    "pm25_rolling_max_6h",
+    "pm25_rolling_mean_12h",
+    "pm25_rolling_std_12h",
+    "pm25_rolling_min_12h",
+    "pm25_rolling_max_12h",
+    "pm25_rolling_mean_24h",
+    "pm25_rolling_std_24h",
+    "pm25_rolling_min_24h",
+    "pm25_rolling_max_24h",
+    "pm25_rolling_mean_72h",
+    "pm25_rolling_std_72h",
+    "pm25_rolling_min_72h",
+    "pm25_rolling_max_72h",
+]
 
-    print("=" * 60)
-    print("AIRSENSE-AI — TRAINING DATASET CREATION")
-    print("=" * 60)
 
-    # --------------------------------------------------------
-    # 1. Connect to Hopsworks
-    # --------------------------------------------------------
+TARGET_COLUMNS = [
+    f"target_pm25_h{i:02d}"
+    for i in range(1, 73)
+]
 
-    print("\n[1/6] Connecting to Hopsworks...")
+
+def connect_feature_store():
+    if not HOPSWORKS_HOST:
+        raise RuntimeError(
+            "HOPSWORKS_HOST is missing."
+        )
+
+    if not HOPSWORKS_PROJECT:
+        raise RuntimeError(
+            "HOPSWORKS_PROJECT is missing."
+        )
+
+    if not HOPSWORKS_API_KEY:
+        raise RuntimeError(
+            "HOPSWORKS_API_KEY is missing."
+        )
 
     project = hopsworks.login(
         host=HOPSWORKS_HOST,
         project=HOPSWORKS_PROJECT,
         api_key_value=HOPSWORKS_API_KEY,
         engine="python",
-        cert_folder=HOPSWORKS_CERT_FOLDER,
     )
 
-    print(f"Connected to project: {project.name}")
+    if project.name != "AirSense_AI":
+        raise RuntimeError(
+            f"Unexpected Hopsworks project: {project.name}"
+        )
 
-    fs = project.get_feature_store()
+    return project.get_feature_store()
+
+
+def main() -> None:
+
+    print("=" * 70)
+    print("AIRSENSE-AI — SUPERVISED TRAINING DATASET CREATION")
+    print("=" * 70)
+
+    # --------------------------------------------------------
+    # 1. Connect
+    # --------------------------------------------------------
+
+    print("\n[1/6] Connecting to Hopsworks...")
+
+    fs = connect_feature_store()
 
     print("Feature Store connected.")
 
     # --------------------------------------------------------
-    # 2. Retrieve Feature View
+    # 2. Get Feature Group
     # --------------------------------------------------------
 
-    print("\n[2/6] Retrieving Feature View...")
+    print("\n[2/6] Retrieving Feature Group...")
 
-    feature_view = fs.get_feature_view(
-        name=FEATURE_VIEW_NAME,
-        version=FEATURE_VIEW_VERSION,
+    feature_group = fs.get_feature_group(
+        name=FEATURE_GROUP_NAME,
+        version=FEATURE_GROUP_VERSION,
     )
 
-    if feature_view is None:
-        raise RuntimeError(
-            f"Feature View '{FEATURE_VIEW_NAME}' "
-            f"version {FEATURE_VIEW_VERSION} was not found."
-        )
-
-    print(f"Feature View: {feature_view.name}")
-    print(f"Version: {feature_view.version}")
-
-    # --------------------------------------------------------
-    # 3. Create / retrieve training dataset
-    # --------------------------------------------------------
-
-    print("\n[3/6] Getting training data...")
-
-    X, y = feature_view.get_training_data(
-        training_dataset_version=TRAINING_DATASET_VERSION
+    print(
+        f"Feature Group: "
+        f"{FEATURE_GROUP_NAME} v{FEATURE_GROUP_VERSION}"
     )
 
-    print(f"Raw feature rows: {len(X)}")
-    print(f"Raw feature columns: {len(X.columns)}")
-    print(f"Target rows: {len(y)}")
-
     # --------------------------------------------------------
-    # 4. Ensure timestamp is available
+    # 3. Read full historical feature data
     # --------------------------------------------------------
 
-    print("\n[4/6] Preparing training data...")
+    print("\n[3/6] Reading historical feature data...")
 
-    if "timestamp" in X.columns:
-        X["timestamp"] = pd.to_datetime(
-            X["timestamp"],
-            utc=True
-        )
-
-    if isinstance(y, pd.DataFrame) and "timestamp" in y.columns:
-        y["timestamp"] = pd.to_datetime(
-            y["timestamp"],
-            utc=True
-        )
-
-    # --------------------------------------------------------
-    # 5. Remove incomplete rows
-    # --------------------------------------------------------
-
-    print("\n[5/6] Removing incomplete historical rows...")
-
-    print("\nMissing values before cleaning:")
-
-    missing_x = X.isna().sum()
-    missing_x = missing_x[missing_x > 0]
-
-    if len(missing_x) > 0:
-        print(missing_x)
-    else:
-        print("No missing values in features.")
-
-    if isinstance(y, pd.DataFrame):
-        missing_y = y.isna().sum()
-    else:
-        missing_y = pd.Series(
-            {
-                y.name if y.name else "target": y.isna().sum()
-            }
-        )
-
-    print("\nTarget missing values:")
-    print(missing_y)
-
-    # Combine X and y so the same rows are removed from both.
-    combined = pd.concat(
-        [
-            X.reset_index(drop=True),
-            y.reset_index(drop=True),
-        ],
-        axis=1,
+    df = feature_group.read(
+        dataframe_type="pandas"
     )
 
-    rows_before = len(combined)
+    print("Rows:", len(df))
+    print("Columns:", len(df.columns))
 
-    combined = combined.dropna()
+    required = (
+        ["timestamp", "pm25"]
+        + FEATURE_COLUMNS
+    )
 
-    rows_after = len(combined)
+    missing = [
+        column
+        for column in required
+        if column not in df.columns
+    ]
 
-    rows_removed = rows_before - rows_after
-
-    print("\nRows before cleaning:", rows_before)
-    print("Rows after cleaning:", rows_after)
-    print("Rows removed:", rows_removed)
-
-    if rows_after == 0:
+    if missing:
         raise RuntimeError(
-            "No complete rows remain after removing missing values."
+            "Required columns are missing from "
+            "Feature Group v3:\n"
+            + "\n".join(missing)
         )
 
     # --------------------------------------------------------
-    # Separate features and target again
+    # 4. Prepare chronological source data
     # --------------------------------------------------------
 
-    target_name = y.name
+    print("\n[4/6] Preparing chronological source data...")
 
-    if target_name is None:
-        target_name = "pm25"
+    df["timestamp"] = pd.to_datetime(
+        df["timestamp"],
+        utc=True,
+        errors="coerce",
+    )
 
-    if target_name not in combined.columns:
+    df["pm25"] = pd.to_numeric(
+        df["pm25"],
+        errors="coerce",
+    )
+
+    df = (
+        df.dropna(
+            subset=[
+                "timestamp",
+                "pm25",
+            ]
+        )
+        .sort_values("timestamp")
+        .drop_duplicates(
+            subset=["timestamp"],
+            keep="last",
+        )
+        .reset_index(drop=True)
+    )
+
+    if df.empty:
         raise RuntimeError(
-            f"Target column '{target_name}' was not found "
-            "after combining the datasets."
+            "No valid historical rows remain."
         )
 
-    y_clean = combined[target_name].copy()
+    print(
+        "First timestamp:",
+        df["timestamp"].min(),
+    )
 
-    X_clean = combined.drop(
-        columns=[target_name]
-    ).copy()
+    print(
+        "Last timestamp:",
+        df["timestamp"].max(),
+    )
 
     # --------------------------------------------------------
-    # Sort chronologically
+    # 5. Create 72-hour future targets
     # --------------------------------------------------------
 
-    if "timestamp" in X_clean.columns:
+    print(
+        "\n[5/6] Creating 72-hour supervised targets..."
+    )
 
-        sort_order = X_clean["timestamp"].argsort()
+    # Never create targets across timestamp gaps.
+    delta = (
+        df["timestamp"]
+        .diff()
+        .dt.total_seconds()
+        .div(3600)
+    )
 
-        X_clean = X_clean.iloc[
-            sort_order
-        ].reset_index(drop=True)
+    df["_group"] = (
+        delta.fillna(0)
+        .ne(1)
+        .cumsum()
+    )
 
-        y_clean = y_clean.iloc[
-            sort_order
-        ].reset_index(drop=True)
+    training_parts = []
 
-    else:
-        print(
-            "\nWARNING: timestamp is not present in X. "
-            "Chronological sorting cannot be performed."
+    for _, group in df.groupby(
+        "_group",
+        sort=False,
+    ):
+
+        group = (
+            group
+            .sort_values("timestamp")
+            .reset_index(drop=True)
         )
+
+        # A valid row needs:
+        # current features + 72 future hourly observations.
+        if len(group) < 73:
+            continue
+
+        feature_part = group[
+            ["timestamp"] + FEATURE_COLUMNS
+        ].copy()
+
+        target_part = pd.DataFrame(
+            index=group.index
+        )
+
+        for horizon in range(1, 73):
+
+            target_part[
+                f"target_pm25_h{horizon:02d}"
+            ] = (
+                group["pm25"]
+                .shift(-horizon)
+            )
+
+        combined = pd.concat(
+            [
+                feature_part,
+                target_part,
+            ],
+            axis=1,
+        )
+
+        combined = combined.dropna(
+            subset=TARGET_COLUMNS
+        )
+
+        if not combined.empty:
+            training_parts.append(
+                combined
+            )
+
+    if not training_parts:
+        raise RuntimeError(
+            "No valid 72-hour supervised training "
+            "windows could be constructed."
+        )
+
+    training_df = pd.concat(
+        training_parts,
+        ignore_index=True,
+    )
+
+    training_df = (
+        training_df
+        .sort_values("timestamp")
+        .reset_index(drop=True)
+    )
+
+    print(
+        "Supervised rows:",
+        len(training_df),
+    )
+
+    print(
+        "Feature columns:",
+        len(FEATURE_COLUMNS),
+    )
+
+    print(
+        "Target columns:",
+        len(TARGET_COLUMNS),
+    )
 
     # --------------------------------------------------------
     # Final validation
     # --------------------------------------------------------
 
-    print("\nFinal validation:")
+    print("\nFinal validation...")
 
-    print("X shape:", X_clean.shape)
-    print("y shape:", y_clean.shape)
+    feature_nan_count = (
+        training_df[FEATURE_COLUMNS]
+        .isna()
+        .sum()
+        .sum()
+    )
 
-    print(
-        "Remaining feature NaNs:",
-        X_clean.isna().sum().sum()
+    target_nan_count = (
+        training_df[TARGET_COLUMNS]
+        .isna()
+        .sum()
+        .sum()
     )
 
     print(
-        "Remaining target NaNs:",
-        y_clean.isna().sum()
+        "Feature NaNs:",
+        feature_nan_count,
     )
 
-    if "timestamp" in X_clean.columns:
+    print(
+        "Target NaNs:",
+        target_nan_count,
+    )
 
-        print(
-            "First timestamp:",
-            X_clean["timestamp"].min()
-        )
-
-        print(
-            "Last timestamp:",
-            X_clean["timestamp"].max()
-        )
-
-    if X_clean.isna().sum().sum() != 0:
+    if feature_nan_count != 0:
         raise RuntimeError(
-            "Feature dataset still contains NaN values."
+            "Training features still contain NaN values."
         )
 
-    if y_clean.isna().sum() != 0:
+    if target_nan_count != 0:
         raise RuntimeError(
-            "Target dataset still contains NaN values."
+            "Training targets still contain NaN values."
+        )
+
+    if len(FEATURE_COLUMNS) != 43:
+        raise RuntimeError(
+            "Unexpected feature schema."
+        )
+
+    if len(TARGET_COLUMNS) != 72:
+        raise RuntimeError(
+            "Unexpected target schema."
         )
 
     # --------------------------------------------------------
-    # Save
+    # 6. Save
     # --------------------------------------------------------
 
-    print("\n[6/6] Saving training dataset...")
+    print("\n[6/6] Saving training datasets...")
 
     OUTPUT_DIR.mkdir(
         parents=True,
-        exist_ok=True
+        exist_ok=True,
     )
 
-    X_clean.to_csv(
+    X = training_df[
+        ["timestamp"] + FEATURE_COLUMNS
+    ].copy()
+
+    y = training_df[
+        TARGET_COLUMNS
+    ].copy()
+
+    X.to_csv(
         OUTPUT_X_PATH,
-        index=False
+        index=False,
     )
 
-    y_clean.to_csv(
+    y.to_csv(
         OUTPUT_Y_PATH,
         index=False,
-        header=True
     )
 
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 70)
     print("TRAINING DATASET CREATED SUCCESSFULLY")
-    print("=" * 60)
+    print("=" * 70)
 
-    print(f"Features: {OUTPUT_X_PATH}")
-    print(f"Target:   {OUTPUT_Y_PATH}")
+    print(
+        "Features:",
+        OUTPUT_X_PATH,
+    )
 
-    print(f"\nTraining rows: {len(X_clean)}")
-    print(f"Feature columns: {len(X_clean.columns)}")
+    print(
+        "Targets:",
+        OUTPUT_Y_PATH,
+    )
 
-    print("\nFirst 5 feature rows:")
-    print(X_clean.head())
+    print(
+        "Rows:",
+        len(X),
+    )
 
-    print("\nFirst 5 target values:")
-    print(y_clean.head())
+    print(
+        "Feature shape:",
+        X.shape,
+    )
+
+    print(
+        "Target shape:",
+        y.shape,
+    )
 
 
 if __name__ == "__main__":
