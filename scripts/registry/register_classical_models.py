@@ -87,7 +87,12 @@ def register_model(
     )
 
     registered = model.save(
-        str(model_path)
+        str(model_path),
+        upload_configuration={
+            "chunk_size": 5,
+            "simultaneous_uploads": 1,
+            "max_chunk_retries": 5,
+        },
     )
 
     print(
@@ -119,7 +124,7 @@ def main() -> None:
 
     register_model(
         mr=mr,
-        name="airsense-random-forest-72h",
+        name="airsense_random_forest_72h",
         model_path=RF_MODEL_PATH,
         metrics=rf_metrics,
         description=(
@@ -130,7 +135,7 @@ def main() -> None:
 
     register_model(
         mr=mr,
-        name="airsense-xgboost-72h",
+        name="airsense_xgboost_72h",
         model_path=XGB_MODEL_PATH,
         metrics=xgb_metrics,
         description=(
