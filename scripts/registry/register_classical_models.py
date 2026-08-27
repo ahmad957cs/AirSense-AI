@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import hopsworks
+import joblib
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -33,6 +34,13 @@ XGB_MODEL_PATH = (
     / "models"
     / "xgboost"
     / "xgboost_72h.joblib"
+)
+
+XGB_REGISTRY_MODEL_PATH = (
+    PROJECT_ROOT
+    / "models"
+    / "xgboost"
+    / "xgboost_72h_registry.joblib"
 )
 
 
@@ -98,12 +106,28 @@ def main() -> None:
             f"XGBoost model not found: {XGB_MODEL_PATH}"
         )
 
-    print("\nRegistering model:")
+    print("\nOriginal XGBoost artifact:")
     print("airsense_xgboost_72h")
     print(
-        "Artifact size:",
-        f"{XGB_MODEL_PATH.stat().st_size:,}",
-        "bytes",
+        "Original size:",
+        f"{XGB_MODEL_PATH.stat().st_size / 1024 / 1024:.2f}",
+        "MB",
+    )
+
+    print("\nCreating compressed registry artifact...")
+
+    xgb_model = joblib.load(XGB_MODEL_PATH)
+
+    joblib.dump(
+        xgb_model,
+        XGB_REGISTRY_MODEL_PATH,
+        compress=3,
+    )
+
+    print(
+        "Compressed size:",
+        f"{XGB_REGISTRY_MODEL_PATH.stat().st_size / 1024 / 1024:.2f}",
+        "MB",
     )
 
     model = mr.sklearn.create_model(
@@ -116,10 +140,10 @@ def main() -> None:
     )
 
     registered = model.save(
-        str(XGB_MODEL_PATH),
+        str(XGB_REGISTRY_MODEL_PATH),
         keep_original_files=True,
         upload_configuration={
-            "chunk_size": 1024,
+            "chunk_size": 10,
             "simultaneous_uploads": 1,
             "max_chunk_retries": 5,
         },
