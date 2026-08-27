@@ -12,11 +12,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 load_dotenv(PROJECT_ROOT / ".env")
 
-
 HOST = os.getenv("HOPSWORKS_HOST")
 PROJECT = os.getenv("HOPSWORKS_PROJECT")
 API_KEY = os.getenv("HOPSWORKS_API_KEY")
-
 
 if not HOST:
     raise RuntimeError("HOPSWORKS_HOST is missing.")
@@ -29,16 +27,7 @@ if not API_KEY:
 
 
 METRICS_DIR = (
-    PROJECT_ROOT
-    / "artifacts"
-    / "metrics"
-)
-
-RF_MODEL_PATH = (
-    PROJECT_ROOT
-    / "models"
-    / "random_forest"
-    / "random_forest_72h.joblib"
+    PROJECT_ROOT / "artifacts" / "metrics"
 )
 
 XGB_MODEL_PATH = (
@@ -67,18 +56,12 @@ def mean_metrics(path: Path) -> dict[str, float]:
 
     if missing:
         raise RuntimeError(
-            f"Missing metric columns in {path}: {missing}"
+            f"Missing metric columns: {missing}"
         )
 
-    numeric = (
-        df[required]
-        .mean()
-        .to_dict()
-    )
-
     return {
-        key: float(value)
-        for key, value in numeric.items()
+        key: float(df[key].mean())
+        for key in required
     }
 
 
@@ -89,46 +72,6 @@ def connect_project():
         api_key_value=API_KEY,
         engine="python",
     )
-
-
-def register_model(
-    mr,
-    name: str,
-    model_path: Path,
-    metrics: dict[str, float],
-    description: str,
-):
-    if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model artifact not found: {model_path}"
-        )
-
-    print(f"\nRegistering model: {name}")
-    print(f"Artifact: {model_path}")
-    print(f"Artifact size: {model_path.stat().st_size:,} bytes")
-
-    model = mr.sklearn.create_model(
-        name=name,
-        metrics=metrics,
-        description=description,
-    )
-
-    registered = model.save(
-        str(model_path),
-        keep_original_files=True,
-        upload_configuration={
-            "chunk_size": 1024,
-            "simultaneous_uploads": 1,
-            "max_chunk_retries": 5,
-        },
-    )
-
-    print(
-        f"Registered {name} "
-        f"version {registered.version}"
-    )
-
-    return registered
 
 
 def main() -> None:
@@ -147,36 +90,46 @@ def main() -> None:
 
     mr = project.get_model_registry()
 
-    rf_metrics = mean_metrics(
-        METRICS_DIR
-        / "random_forest_validation_metrics.csv"
-    )
-
     xgb_metrics = mean_metrics(
         METRICS_DIR
         / "xgboost_validation_metrics.csv"
     )
 
-    register_model(
-        mr=mr,
-        name="airsense_random_forest_72h",
-        model_path=RF_MODEL_PATH,
-        metrics=rf_metrics,
-        description=(
-            "AirSense-AI 72-hour PM2.5 "
-            "Random Forest forecasting model."
-        ),
+    if not XGB_MODEL_PATH.exists():
+        raise FileNotFoundError(
+            f"XGBoost model not found: {XGB_MODEL_PATH}"
+        )
+
+    print("\nRegistering model:")
+    print("airsense_xgboost_72h")
+    print(
+        "Artifact size:",
+        f"{XGB_MODEL_PATH.stat().st_size:,}",
+        "bytes",
     )
 
-    register_model(
-        mr=mr,
+    model = mr.sklearn.create_model(
         name="airsense_xgboost_72h",
-        model_path=XGB_MODEL_PATH,
         metrics=xgb_metrics,
         description=(
             "AirSense-AI 72-hour PM2.5 "
             "XGBoost forecasting model."
         ),
+    )
+
+    registered = model.save(
+        str(XGB_MODEL_PATH),
+        keep_original_files=True,
+        upload_configuration={
+            "chunk_size": 100,
+            "simultaneous_uploads": 1,
+            "max_chunk_retries": 5,
+        },
+    )
+
+    print(
+        f"\nRegistered airsense_xgboost_72h "
+        f"version {registered.version}"
     )
 
     print("\nModel registry update complete.")
