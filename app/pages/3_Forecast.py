@@ -1,32 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pathlib import Path
 
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-
-# ============================================================
-# PATHS
-# ============================================================
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-FORECAST_PATH = (
-    PROJECT_ROOT
-    / "artifacts"
-    / "predictions"
-    / "latest_72h_forecast.csv"
-)
-
-FEATURE_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "pm25_features.csv"
-)
+from src.prediction.forecast_engine import ForecastEngine
 
 
 # ============================================================
@@ -47,7 +27,6 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-
     .stApp {
         background:
             radial-gradient(
@@ -75,7 +54,6 @@ st.markdown(
         padding-top: 2rem;
         padding-bottom: 3rem;
     }
-
     </style>
     """,
     unsafe_allow_html=True,
@@ -83,66 +61,80 @@ st.markdown(
 
 
 # ============================================================
-# LOAD DATA
+# PRODUCTION FORECAST
 # ============================================================
 
 @st.cache_data(ttl=300)
-def load_forecast(path: str) -> pd.DataFrame:
-    df = pd.read_csv(
-        path,
-        parse_dates=["timestamp"],
+def load_production_forecast() -> pd.DataFrame:
+    """
+    Production forecasting path.
+
+    Features are loaded through Hopsworks Feature View by
+    ForecastEngine. No local CSV is used as the production
+    inference source.
+    """
+    engine = ForecastEngine()
+
+    forecast = engine.forecast()
+
+    if forecast is None or forecast.empty:
+        raise RuntimeError(
+            "ForecastEngine returned no forecast data."
+        )
+
+    forecast = forecast.copy()
+
+    if "timestamp" not in forecast.columns:
+        raise RuntimeError(
+            "ForecastEngine output is missing 'timestamp'."
+        )
+
+    forecast["timestamp"] = pd.to_datetime(
+        forecast["timestamp"],
+        utc=True,
+        errors="coerce",
     )
 
-    return (
-        df.sort_values("hour_ahead")
+    forecast = (
+        forecast.dropna(subset=["timestamp"])
+        .sort_values("hour_ahead")
         .reset_index(drop=True)
     )
 
+    if len(forecast) != 72:
+        raise RuntimeError(
+            f"Expected 72 forecast hours, "
+            f"but received {len(forecast)}."
+        )
 
-@st.cache_data(ttl=300)
-def load_history(path: str) -> pd.DataFrame:
-    df = pd.read_csv(
-        path,
-        parse_dates=["timestamp"],
-    )
-
-    return (
-        df.sort_values("timestamp")
-        .reset_index(drop=True)
-    )
+    return forecast
 
 
-if not FORECAST_PATH.exists():
+# ============================================================
+# LOAD PRODUCTION DATA
+# ============================================================
+
+try:
+    forecast = load_production_forecast()
+
+except Exception as exc:
+    st.title("🌫️ 72-Hour Air Quality Outlook")
+    st.subheader("AirSense-AI Predictive Intelligence")
+
     st.error(
-        "Forecast artifact not found."
+        "A production forecast is currently unavailable."
     )
+
+    st.warning(
+        str(exc)
+    )
+
     st.info(
-        "Run: python -m scripts.prediction.test_forecast"
+        "The dashboard requires a valid continuous 72-hour "
+        "window from the Hopsworks Feature Store. "
+        "No local CSV fallback is used for production inference."
     )
-    st.stop()
 
-
-if not FEATURE_PATH.exists():
-    st.error(
-        "Feature dataset not found."
-    )
-    st.stop()
-
-
-forecast = load_forecast(
-    str(FORECAST_PATH)
-)
-
-history = load_history(
-    str(FEATURE_PATH)
-)
-
-
-if len(forecast) != 72:
-    st.error(
-        f"Expected 72 forecast hours, "
-        f"but found {len(forecast)}."
-    )
     st.stop()
 
 
@@ -150,16 +142,15 @@ if len(forecast) != 72:
 # SUMMARY VALUES
 # ============================================================
 
-latest_observation = pd.to_datetime(
-    history["timestamp"].iloc[-1]
+latest_observation = (
+    forecast["timestamp"].min()
+    - pd.Timedelta(hours=1)
 )
 
-latest_forecast = pd.to_datetime(
-    forecast["timestamp"].iloc[-1]
-)
+latest_forecast = forecast["timestamp"].max()
 
 current_pm25 = float(
-    history["pm25"].iloc[-1]
+    forecast["pm25"].iloc[0]
 )
 
 average_pm25 = float(
@@ -197,9 +188,10 @@ model_counts = (
 now_utc = datetime.now(timezone.utc)
 
 observation_utc = (
-    latest_observation
-    .to_pydatetime()
-    .astimezone(timezone.utc)
+    pd.to_datetime(
+        latest_observation,
+        utc=True,
+    ).to_pydatetime()
 )
 
 age_hours = (
@@ -264,6 +256,7 @@ st.write(
     "Hourly PM2.5 forecasting with horizon-wise "
     "model selection and AQI estimation."
 )
+
 
 if age_hours <= 2:
 
@@ -438,7 +431,7 @@ st.plotly_chart(
 # ============================================================
 
 st.header(
-    "🟡 AQI Outlook"
+    "🟢 AQI Outlook"
 )
 
 fig_aqi = go.Figure()
@@ -561,7 +554,7 @@ for day_name, column in day_columns.items():
     with column:
 
         st.subheader(
-            f"{day_name}"
+            day_name
         )
 
         st.metric(
@@ -714,7 +707,7 @@ st.dataframe(
 st.divider()
 
 st.caption(
-    "AirSense-AI • Latest available forecast • "
+    "AirSense-AI • Latest available production forecast • "
     f"Source observation: "
     f"{latest_observation.strftime('%Y-%m-%d %H:%M UTC')} • "
     f"Forecast ends: "

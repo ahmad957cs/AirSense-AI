@@ -9,19 +9,15 @@ from src.aqi.aqi_calculator import (
     pm25_to_aqi,
 )
 
+from src.prediction.hopsworks_features import (
+    get_latest_feature_window,
+)
 from src.prediction.model_loader import (
     ModelBundle,
 )
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-FEATURE_DATA_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "pm25_features.csv"
-)
 
 INPUT_WINDOW = 72
 FORECAST_HORIZON = 72
@@ -38,25 +34,15 @@ class ForecastEngine:
     # Load latest history
     # ========================================================
 
-    def load_history(
-        self,
-    ) -> pd.DataFrame:
+    def load_history(self) -> pd.DataFrame:
+        """
+        Load the latest forecasting features from Hopsworks.
 
-        if not FEATURE_DATA_PATH.exists():
-
-            raise FileNotFoundError(
-                f"Feature dataset not found:\n"
-                f"{FEATURE_DATA_PATH}"
-            )
-
-        df = pd.read_csv(
-            FEATURE_DATA_PATH,
-            parse_dates=["timestamp"],
-        )
-
-        df = (
-            df.sort_values("timestamp")
-            .reset_index(drop=True)
+        This is the production inference path. Local CSV files
+        are not used for production feature retrieval.
+        """
+        df = get_latest_feature_window(
+            hours=INPUT_WINDOW
         )
 
         required = [
@@ -75,13 +61,15 @@ class ForecastEngine:
         ]
 
         if missing:
-
             raise ValueError(
-                "Required columns missing:\n"
+                "Required columns missing from Hopsworks Feature View:\n"
                 + "\n".join(missing)
             )
 
-        return df
+        return (
+            df.sort_values("timestamp")
+            .reset_index(drop=True)
+        )
 
     # ========================================================
     # Validate latest 72 hours
