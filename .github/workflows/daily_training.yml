@@ -81,6 +81,94 @@ jobs:
         run: |
           python -m scripts.training.create_training_dataset
 
+      - name: Assemble model training dataset
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+
+          root = Path.cwd()
+          processed = root / "data" / "processed"
+
+          features_path = processed / "training_features.csv"
+          target_path = processed / "training_target.csv"
+          combined_path = (
+              processed / "airsense_72hour_forecasting_dataset.csv"
+          )
+
+          if not features_path.exists():
+              raise FileNotFoundError(
+                  f"Missing features file: {features_path}"
+              )
+
+          if not target_path.exists():
+              raise FileNotFoundError(
+                  f"Missing target file: {target_path}"
+              )
+
+          X = pd.read_csv(
+              features_path,
+              parse_dates=["timestamp"],
+          )
+
+          y = pd.read_csv(
+              target_path,
+          )
+
+          if len(X) != len(y):
+              raise RuntimeError(
+                  f"Feature/target row mismatch: "
+                  f"X={len(X)}, y={len(y)}"
+              )
+
+          target_columns = [
+              f"target_pm25_h{i:02d}"
+              for i in range(1, 73)
+          ]
+
+          missing_targets = [
+              c for c in target_columns
+              if c not in y.columns
+          ]
+
+          if missing_targets:
+              raise RuntimeError(
+                  "Missing target columns:\n"
+                  + "\n".join(missing_targets)
+              )
+
+          combined = pd.concat(
+              [
+                  X.reset_index(drop=True),
+                  y[target_columns].reset_index(drop=True),
+              ],
+              axis=1,
+          )
+
+          combined = (
+              combined
+              .sort_values("timestamp")
+              .reset_index(drop=True)
+          )
+
+          combined_path.parent.mkdir(
+              parents=True,
+              exist_ok=True,
+          )
+
+          combined.to_csv(
+              combined_path,
+              index=False,
+          )
+
+          print("Training dataset assembled successfully.")
+          print("Output:", combined_path)
+          print("Rows:", len(combined))
+          print("Columns:", len(combined.columns))
+          print("Features:", len(X.columns) - 1)
+          print("Targets:", len(target_columns))
+          PY
+
       - name: Train classical forecasting models
         run: |
           python -m scripts.training.retrain_classical_models
