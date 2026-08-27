@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
 
@@ -13,9 +12,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 load_dotenv(PROJECT_ROOT / ".env")
 
+
 HOST = os.getenv("HOPSWORKS_HOST")
 PROJECT = os.getenv("HOPSWORKS_PROJECT")
 API_KEY = os.getenv("HOPSWORKS_API_KEY")
+
 
 if not HOST:
     raise RuntimeError("HOPSWORKS_HOST is missing.")
@@ -27,7 +28,11 @@ if not API_KEY:
     raise RuntimeError("HOPSWORKS_API_KEY is missing.")
 
 
-METRICS_DIR = PROJECT_ROOT / "artifacts" / "metrics"
+METRICS_DIR = (
+    PROJECT_ROOT
+    / "artifacts"
+    / "metrics"
+)
 
 RF_MODEL_PATH = (
     PROJECT_ROOT
@@ -45,10 +50,28 @@ XGB_MODEL_PATH = (
 
 
 def mean_metrics(path: Path) -> dict[str, float]:
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Metrics file not found: {path}"
+        )
+
     df = pd.read_csv(path)
 
+    required = ["MAE", "RMSE", "R2"]
+
+    missing = [
+        column
+        for column in required
+        if column not in df.columns
+    ]
+
+    if missing:
+        raise RuntimeError(
+            f"Missing metric columns in {path}: {missing}"
+        )
+
     numeric = (
-        df[["MAE", "RMSE", "R2"]]
+        df[required]
         .mean()
         .to_dict()
     )
@@ -80,6 +103,10 @@ def register_model(
             f"Model artifact not found: {model_path}"
         )
 
+    print(f"\nRegistering model: {name}")
+    print(f"Artifact: {model_path}")
+    print(f"Artifact size: {model_path.stat().st_size:,} bytes")
+
     model = mr.sklearn.create_model(
         name=name,
         metrics=metrics,
@@ -87,23 +114,14 @@ def register_model(
     )
 
     registered = model.save(
-    str(model_path),
-    upload_configuration={
-        "chunk_size": 100,
-        "simultaneous_uploads": 1,
-        "max_chunk_retries": 3,
-    },
-)
-
-    print(
-        f"Registered {name} "
-        f"version {registered.version}"
+        str(model_path),
+        keep_original_files=True,
+        upload_configuration={
+            "chunk_size": 1024,
+            "simultaneous_uploads": 1,
+            "max_chunk_retries": 5,
+        },
     )
-
-    return registered
-
-
-def main() -> None:
 
     print(
         f"Registered {name} "
@@ -122,14 +140,21 @@ def main() -> None:
 
     print("Connected project:", project.name)
 
+    if project.name != PROJECT:
+        raise RuntimeError(
+            f"Unexpected project: {project.name}"
+        )
+
     mr = project.get_model_registry()
 
     rf_metrics = mean_metrics(
-        METRICS_DIR / "random_forest_validation_metrics.csv"
+        METRICS_DIR
+        / "random_forest_validation_metrics.csv"
     )
 
     xgb_metrics = mean_metrics(
-        METRICS_DIR / "xgboost_validation_metrics.csv"
+        METRICS_DIR
+        / "xgboost_validation_metrics.csv"
     )
 
     register_model(
