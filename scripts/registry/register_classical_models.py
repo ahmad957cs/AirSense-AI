@@ -26,9 +26,7 @@ if not API_KEY:
     raise RuntimeError("HOPSWORKS_API_KEY is missing.")
 
 
-METRICS_DIR = (
-    PROJECT_ROOT / "artifacts" / "metrics"
-)
+METRICS_DIR = PROJECT_ROOT / "artifacts" / "metrics"
 
 XGB_MODEL_PATH = (
     PROJECT_ROOT
@@ -121,7 +119,7 @@ def main() -> None:
         str(XGB_MODEL_PATH),
         keep_original_files=True,
         upload_configuration={
-            "chunk_size": 100,
+            "chunk_size": 1024,
             "simultaneous_uploads": 1,
             "max_chunk_retries": 5,
         },
