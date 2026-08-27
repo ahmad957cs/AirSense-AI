@@ -351,7 +351,7 @@ def main() -> None:
 
     print("\nFinal validation...")
 
-    feature_nan_count = (
+    feature_nan_count_before = (
         training_df[FEATURE_COLUMNS]
         .isna()
         .sum()
@@ -366,8 +366,8 @@ def main() -> None:
     )
 
     print(
-        "Feature NaNs:",
-        feature_nan_count,
+        "Feature NaNs before cleaning:",
+        feature_nan_count_before,
     )
 
     print(
@@ -375,14 +375,72 @@ def main() -> None:
         target_nan_count,
     )
 
-    if feature_nan_count != 0:
-        raise RuntimeError(
-            "Training features still contain NaN values."
-        )
-
     if target_nan_count != 0:
         raise RuntimeError(
             "Training targets still contain NaN values."
+        )
+
+    # --------------------------------------------------------
+    # Remove rows where forecasting input features are
+    # incomplete. These occur naturally at the beginning
+    # of contiguous blocks because lag/rolling features
+    # require historical observations.
+    # --------------------------------------------------------
+
+    rows_before_feature_cleaning = len(training_df)
+
+    training_df = training_df.dropna(
+        subset=FEATURE_COLUMNS
+    ).reset_index(drop=True)
+
+    rows_removed_for_features = (
+        rows_before_feature_cleaning
+        - len(training_df)
+    )
+
+    print(
+        "Rows removed due to incomplete features:",
+        rows_removed_for_features,
+    )
+
+    if training_df.empty:
+        raise RuntimeError(
+            "No complete training rows remain after "
+            "feature cleaning."
+        )
+
+    feature_nan_count_after = (
+        training_df[FEATURE_COLUMNS]
+        .isna()
+        .sum()
+        .sum()
+    )
+
+    target_nan_count_after = (
+        training_df[TARGET_COLUMNS]
+        .isna()
+        .sum()
+        .sum()
+    )
+
+    print(
+        "Feature NaNs after cleaning:",
+        feature_nan_count_after,
+    )
+
+    print(
+        "Target NaNs after cleaning:",
+        target_nan_count_after,
+    )
+
+    if feature_nan_count_after != 0:
+        raise RuntimeError(
+            "Feature NaNs remain after cleaning."
+        )
+
+    if target_nan_count_after != 0:
+        raise RuntimeError(
+            "Target NaNs remain after cleaning."
         )
 
     if len(FEATURE_COLUMNS) != 43:
