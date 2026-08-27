@@ -89,6 +89,11 @@ def register_model(
     registered = model.save(
         str(model_path),
         upload_configuration={
+            "chunk_size": 100,
+            "simultaneous_uploads": 1,
+            "max_chunk_retries": 3,
+        },,
+        upload_configuration={
             "chunk_size": 5,
             "simultaneous_uploads": 1,
             "max_chunk_retries": 5,
