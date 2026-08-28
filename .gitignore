@@ -1,18 +1,56 @@
-@"
+# ============================================================
+# Local environment / secrets
+# ============================================================
+
 .venv/
 .env
 .hopsworks/
+
 __pycache__/
 *.pyc
 .DS_Store
 
-# Large ML artifacts
+# ============================================================
+# Large ML model artifacts
+# ============================================================
+
 *.joblib
 *.pkl
 *.h5
 
-# Local generated data/artifacts
+# Keep only small preprocessing artifacts needed for inference
+!artifacts/preprocessing/tabular_imputer.joblib
+!artifacts/preprocessing/feature_columns.json
+!artifacts/preprocessing/feature_scaler.pkl
+!artifacts/preprocessing/target_scaler.pkl
+
+# Keep the LSTM model already tracked in models/lstm/
+!models/lstm/
+!models/lstm/airsense_lstm_72h_best.keras
+
+# ============================================================
+# Generated/local data
+# ============================================================
+
+# Ignore raw acquisition data
 data/raw/
-data/processed/
-artifacts/
-"@ | Set-Content .gitignore
+
+# Allow processed datasets needed by the examiner
+!data/
+!data/processed/
+!data/processed/*.csv
+
+# Allow project artifacts needed by the examiner
+!artifacts/
+!artifacts/eda/
+!artifacts/eda/**
+!artifacts/explainability/
+!artifacts/explainability/**
+!artifacts/metrics/
+!artifacts/metrics/**
+!artifacts/model_selection/
+!artifacts/model_selection/**
+!artifacts/predictions/
+!artifacts/predictions/**
+!artifacts/preprocessing/
+!artifacts/preprocessing/**

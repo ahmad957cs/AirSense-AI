@@ -1,0 +1,11 @@
+{
+  "rows": 4434,
+  "columns": 50,
+  "missing_cells": 7926,
+  "duplicate_rows": 0,
+  "duplicate_timestamps": 0,
+  "one_hour_intervals": 4420,
+  "non_hourly_intervals": 13,
+  "numeric_columns": 45,
+  "categorical_columns": 5
+}

@@ -1,0 +1,9 @@
+{
+  "rows": 4434,
+  "columns": 50,
+  "first_timestamp": "2025-05-24 16:00:00+00:00",
+  "last_timestamp": "2026-08-09 23:00:00+00:00",
+  "duplicate_rows": 0,
+  "duplicate_timestamps": 0,
+  "total_missing_cells": 7926
+}

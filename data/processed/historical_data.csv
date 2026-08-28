@@ -1,0 +1,2 @@
+collection_time,city,country,latitude,longitude,aqi,dominant_pollutant,pm25,pm10,temperature,feels_like,humidity,pressure,visibility,wind_speed,wind_degree,wind_gust,cloud_cover,weather,weather_description,sunrise,sunset,timezone,api_timestamp
+2026-08-07 15:49:52.563318+00:00,Islamabad,PK,33.7104,73.1338,154,pm25,154,,29.91,36.05,75,1002,10000,3.02,126,3.84,75,Clouds,broken clouds,1786062207,1786111389,18000,1786117547
