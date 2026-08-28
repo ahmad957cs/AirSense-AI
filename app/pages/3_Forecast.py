@@ -1,12 +1,32 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from src.prediction.forecast_engine import ForecastEngine
+
+# ============================================================
+# PATHS
+# ============================================================
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+FORECAST_PATH = (
+    PROJECT_ROOT
+    / "artifacts"
+    / "predictions"
+    / "latest_72h_forecast.csv"
+)
+
+FEATURE_PATH = (
+    PROJECT_ROOT
+    / "data"
+    / "processed"
+    / "pm25_features.csv"
+)
 
 
 # ============================================================
@@ -17,43 +37,150 @@ st.set_page_config(
     page_title="AirSense-AI | Forecast",
     page_icon="🌫️",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 
 # ============================================================
-# DESIGN
+# VISUAL STYLE
 # ============================================================
 
 st.markdown(
     """
     <style>
+
+    /* =========================
+       APP BACKGROUND
+       ========================= */
+
     .stApp {
-        background:
-            radial-gradient(
-                circle at 10% 10%,
-                rgba(14,165,233,.08),
-                transparent 25%
-            ),
-            radial-gradient(
-                circle at 90% 10%,
-                rgba(99,102,241,.07),
-                transparent 25%
-            ),
-            #07111f;
+        background: #0b1220;
+        color: #f8fafc;
     }
 
     [data-testid="stHeader"] {
-        background: transparent;
-    }
-
-    [data-testid="stSidebar"] {
-        background: #07111f;
+        background: #0b1220;
     }
 
     .block-container {
+        max-width: 1450px;
         padding-top: 2rem;
         padding-bottom: 3rem;
     }
+
+    /* =========================
+       SIDEBAR
+       ========================= */
+
+    [data-testid="stSidebar"] {
+        background: #101a2b;
+        border-right: 1px solid #263852;
+    }
+
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] label {
+        color: #dbeafe !important;
+    }
+
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        color: #ffffff !important;
+    }
+
+    [data-testid="stSidebar"] hr {
+        border-color: #263852 !important;
+    }
+
+    /* =========================
+       HEADINGS
+       ========================= */
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+    }
+
+    p {
+        color: #cbd5e1;
+    }
+
+    /* =========================
+       STREAMLIT METRICS
+       ========================= */
+
+    [data-testid="stMetric"] {
+        background: #111c2e;
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 18px;
+        min-height: 120px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    [data-testid="stMetricLabel"] {
+        color: #94a3b8 !important;
+        font-weight: 650 !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+    }
+
+    [data-testid="stMetricDelta"] {
+        color: #7dd3fc !important;
+    }
+
+    /* =========================
+       ALERTS
+       ========================= */
+
+    [data-testid="stAlert"] {
+        border-radius: 14px;
+    }
+
+    /* =========================
+       CHART CONTAINERS
+       ========================= */
+
+    [data-testid="stPlotlyChart"] {
+        background: #0f1b2d;
+        border: 1px solid #2b3f5c;
+        border-radius: 16px;
+        padding: 6px;
+    }
+
+    /* =========================
+       DATAFRAME
+       ========================= */
+
+    [data-testid="stDataFrame"] {
+        border: 1px solid #2b3f5c;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    /* =========================
+       DIVIDERS
+       ========================= */
+
+    hr {
+        border-color: #263852 !important;
+    }
+
+    /* =========================
+       CAPTIONS
+       ========================= */
+
+    [data-testid="stCaptionContainer"] {
+        color: #94a3b8 !important;
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -61,80 +188,118 @@ st.markdown(
 
 
 # ============================================================
-# PRODUCTION FORECAST
+# LOAD DATA
 # ============================================================
 
 @st.cache_data(ttl=300)
-def load_production_forecast() -> pd.DataFrame:
-    """
-    Production forecasting path.
-
-    Features are loaded through Hopsworks Feature View by
-    ForecastEngine. No local CSV is used as the production
-    inference source.
-    """
-    engine = ForecastEngine()
-
-    forecast = engine.forecast()
-
-    if forecast is None or forecast.empty:
-        raise RuntimeError(
-            "ForecastEngine returned no forecast data."
-        )
-
-    forecast = forecast.copy()
-
-    if "timestamp" not in forecast.columns:
-        raise RuntimeError(
-            "ForecastEngine output is missing 'timestamp'."
-        )
-
-    forecast["timestamp"] = pd.to_datetime(
-        forecast["timestamp"],
-        utc=True,
-        errors="coerce",
+def load_forecast(path: str) -> pd.DataFrame:
+    df = pd.read_csv(
+        path,
+        parse_dates=["timestamp"],
     )
 
-    forecast = (
-        forecast.dropna(subset=["timestamp"])
-        .sort_values("hour_ahead")
+    return (
+        df.sort_values("hour_ahead")
         .reset_index(drop=True)
     )
 
-    if len(forecast) != 72:
-        raise RuntimeError(
-            f"Expected 72 forecast hours, "
-            f"but received {len(forecast)}."
-        )
 
-    return forecast
+@st.cache_data(ttl=300)
+def load_history(path: str) -> pd.DataFrame:
+    df = pd.read_csv(
+        path,
+        parse_dates=["timestamp"],
+    )
+
+    return (
+        df.sort_values("timestamp")
+        .reset_index(drop=True)
+    )
 
 
 # ============================================================
-# LOAD PRODUCTION DATA
+# VALIDATE FILES
 # ============================================================
 
-try:
-    forecast = load_production_forecast()
-
-except Exception as exc:
-    st.title("🌫️ 72-Hour Air Quality Outlook")
-    st.subheader("AirSense-AI Predictive Intelligence")
-
-    st.error(
-        "A production forecast is currently unavailable."
-    )
-
-    st.warning(
-        str(exc)
-    )
+if not FORECAST_PATH.exists():
+    st.error("Forecast artifact not found.")
 
     st.info(
-        "The dashboard requires a valid continuous 72-hour "
-        "window from the Hopsworks Feature Store. "
-        "No local CSV fallback is used for production inference."
+        "A verified 72-hour forecast artifact is "
+        "not currently available."
     )
 
+    st.stop()
+
+
+if not FEATURE_PATH.exists():
+    st.error("Feature dataset not found.")
+    st.stop()
+
+
+# ============================================================
+# LOAD
+# ============================================================
+
+forecast = load_forecast(
+    str(FORECAST_PATH)
+)
+
+history = load_history(
+    str(FEATURE_PATH)
+)
+
+
+# ============================================================
+# VALIDATE FORECAST
+# ============================================================
+
+required_forecast_columns = [
+    "timestamp",
+    "hour_ahead",
+    "day",
+    "model_used",
+    "pm25",
+    "pm25_24h_average",
+    "aqi",
+    "aqi_category",
+]
+
+missing_forecast_columns = [
+    column
+    for column in required_forecast_columns
+    if column not in forecast.columns
+]
+
+if missing_forecast_columns:
+    st.error(
+        "Forecast artifact is missing required columns:"
+    )
+    st.code(
+        "\n".join(missing_forecast_columns)
+    )
+    st.stop()
+
+
+if len(forecast) != 72:
+    st.error(
+        f"Expected 72 forecast hours, "
+        f"but found {len(forecast)}."
+    )
+    st.stop()
+
+
+if "timestamp" not in history.columns:
+    st.error(
+        "Historical dataset is missing timestamp."
+    )
+    st.stop()
+
+
+if "pm25" not in history.columns:
+    st.error(
+        "Historical dataset is missing PM2.5."
+    )
     st.stop()
 
 
@@ -142,15 +307,16 @@ except Exception as exc:
 # SUMMARY VALUES
 # ============================================================
 
-latest_observation = (
-    forecast["timestamp"].min()
-    - pd.Timedelta(hours=1)
+latest_observation = pd.to_datetime(
+    history["timestamp"].iloc[-1]
 )
 
-latest_forecast = forecast["timestamp"].max()
+latest_forecast = pd.to_datetime(
+    forecast["timestamp"].iloc[-1]
+)
 
 current_pm25 = float(
-    forecast["pm25"].iloc[0]
+    history["pm25"].iloc[-1]
 )
 
 average_pm25 = float(
@@ -188,10 +354,9 @@ model_counts = (
 now_utc = datetime.now(timezone.utc)
 
 observation_utc = (
-    pd.to_datetime(
-        latest_observation,
-        utc=True,
-    ).to_pydatetime()
+    latest_observation
+    .to_pydatetime()
+    .astimezone(timezone.utc)
 )
 
 age_hours = (
@@ -213,27 +378,18 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("Forecast")
+    st.subheader("Forecast System")
 
-    st.write(
-        "Horizon: **72 hours**"
-    )
-
-    st.write(
-        "Resolution: **Hourly**"
-    )
-
-    st.write(
-        "Models: **LSTM + Random Forest**"
-    )
+    st.write("Horizon: **72 hours**")
+    st.write("Resolution: **Hourly**")
+    st.write("Models: **LSTM + Random Forest**")
+    st.write("Outputs: **PM2.5 + AQI**")
 
     st.divider()
 
-    st.caption(
-        "Latest available forecast"
-    )
+    st.caption("Latest forecast")
 
-    st.caption(
+    st.write(
         latest_forecast.strftime(
             "%Y-%m-%d %H:%M UTC"
         )
@@ -258,29 +414,34 @@ st.write(
 )
 
 
+# ============================================================
+# FRESHNESS STATUS
+# ============================================================
+
 if age_hours <= 2:
 
     st.success(
-        "● Fresh feature data"
+        f"● Fresh feature data — "
+        f"source observation: "
+        f"{latest_observation.strftime('%Y-%m-%d %H:%M UTC')}"
     )
 
 elif age_hours <= 24:
 
     st.warning(
-        "● Feature data is becoming stale"
+        f"● Feature data is becoming stale — "
+        f"source observation: "
+        f"{latest_observation.strftime('%Y-%m-%d %H:%M UTC')}"
     )
 
 else:
 
     st.warning(
-        "● Historical / stale feature data"
+        f"● Historical / stale feature data — "
+        f"source observation: "
+        f"{latest_observation.strftime('%Y-%m-%d %H:%M UTC')} "
+        f"• data age: {age_hours:.1f} hours"
     )
-
-st.caption(
-    f"Latest source observation: "
-    f"{latest_observation.strftime('%Y-%m-%d %H:%M UTC')} "
-    f"• Data age: {age_hours:.1f} hours"
-)
 
 
 # ============================================================
@@ -289,17 +450,14 @@ st.caption(
 
 st.divider()
 
-st.header(
-    "Forecast Snapshot"
-)
+st.header("Forecast Snapshot")
 
 k1, k2, k3, k4 = st.columns(4)
 
 with k1:
     st.metric(
         "Current PM2.5",
-        f"{current_pm25:.1f}",
-        "µg/m³",
+        f"{current_pm25:.1f} µg/m³",
     )
 
 with k2:
@@ -312,8 +470,7 @@ with k2:
 with k3:
     st.metric(
         "Average Forecast PM2.5",
-        f"{average_pm25:.1f}",
-        "µg/m³",
+        f"{average_pm25:.1f} µg/m³",
     )
 
 with k4:
@@ -330,48 +487,59 @@ with k4:
 
 st.divider()
 
-st.header(
-    "🤖 Horizon-wise Model Selection"
+st.header("🤖 Horizon-wise Model Selection")
+
+st.caption(
+    "Validation-selected model counts across "
+    "the 72 forecast horizons."
 )
 
-m1, m2, m3 = st.columns(3)
+lstm_count = int(
+    model_counts.get("LSTM", 0)
+)
+
+rf_count = int(
+    model_counts.get("Random Forest", 0)
+)
+
+m1, m2, m3, m4 = st.columns(4)
 
 with m1:
     st.metric(
         "LSTM Horizons",
-        int(model_counts.get("LSTM", 0)),
+        lstm_count,
         "selected by validation",
     )
 
 with m2:
     st.metric(
         "Random Forest Horizons",
-        int(
-            model_counts.get(
-                "Random Forest",
-                0,
-            )
-        ),
+        rf_count,
         "selected by validation",
     )
 
 with m3:
     st.metric(
-        "Forecast Horizon",
+        "Total Forecast Horizons",
+        len(forecast),
+        "one prediction per hour",
+    )
+
+with m4:
+    st.metric(
+        "Forecast Window",
         "72h",
-        "3 days",
+        "3-day hourly outlook",
     )
 
 
 # ============================================================
-# PM2.5 CHART
+# PM2.5 FORECAST CHART
 # ============================================================
 
 st.divider()
 
-st.header(
-    "📈 PM2.5 Forecast Trajectory"
-)
+st.header("📈 PM2.5 Forecast Trajectory")
 
 fig_pm25 = go.Figure()
 
@@ -386,10 +554,11 @@ fig_pm25.add_trace(
             "width": 3,
         },
         marker={
-            "size": 5,
+            "size": 6,
+            "color": "#7dd3fc",
         },
         fill="tozeroy",
-        fillcolor="rgba(56,189,248,0.06)",
+        fillcolor="rgba(56, 189, 248, 0.08)",
         hovertemplate=(
             "<b>%{x|%b %d %H:%M}</b><br>"
             "PM2.5: %{y:.2f} µg/m³"
@@ -401,22 +570,28 @@ fig_pm25.add_trace(
 fig_pm25.update_layout(
     height=470,
     template="plotly_dark",
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(7,17,31,0.45)",
+    paper_bgcolor="#0f1b2d",
+    plot_bgcolor="#0f1b2d",
     margin={
-        "l": 20,
-        "r": 20,
+        "l": 45,
+        "r": 25,
         "t": 30,
-        "b": 30,
+        "b": 45,
     },
     hovermode="x unified",
+    font={
+        "color": "#e2e8f0",
+    },
     xaxis={
         "title": "Forecast time",
         "showgrid": False,
+        "linecolor": "#475569",
     },
     yaxis={
         "title": "PM2.5 (µg/m³)",
-        "gridcolor": "rgba(148,163,184,0.08)",
+        "gridcolor": "#263852",
+        "zeroline": False,
+        "linecolor": "#475569",
     },
 )
 
@@ -430,30 +605,35 @@ st.plotly_chart(
 # AQI CHART
 # ============================================================
 
-st.header(
-    "🟢 AQI Outlook"
-)
+st.header("🟢 AQI Outlook")
 
 fig_aqi = go.Figure()
 
 fig_aqi.add_hrect(
     y0=0,
     y1=50,
-    fillcolor="rgba(34,197,94,0.05)",
+    fillcolor="rgba(34, 197, 94, 0.08)",
     line_width=0,
 )
 
 fig_aqi.add_hrect(
     y0=50,
     y1=100,
-    fillcolor="rgba(234,179,8,0.06)",
+    fillcolor="rgba(234, 179, 8, 0.08)",
     line_width=0,
 )
 
 fig_aqi.add_hrect(
     y0=100,
     y1=150,
-    fillcolor="rgba(249,115,22,0.07)",
+    fillcolor="rgba(249, 115, 22, 0.08)",
+    line_width=0,
+)
+
+fig_aqi.add_hrect(
+    y0=150,
+    y1=200,
+    fillcolor="rgba(239, 68, 68, 0.08)",
     line_width=0,
 )
 
@@ -468,7 +648,8 @@ fig_aqi.add_trace(
             "width": 3,
         },
         marker={
-            "size": 5,
+            "size": 6,
+            "color": "#fde68a",
         },
         hovertemplate=(
             "<b>%{x|%b %d %H:%M}</b><br>"
@@ -479,24 +660,30 @@ fig_aqi.add_trace(
 )
 
 fig_aqi.update_layout(
-    height=390,
+    height=420,
     template="plotly_dark",
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(7,17,31,0.45)",
+    paper_bgcolor="#0f1b2d",
+    plot_bgcolor="#0f1b2d",
     margin={
-        "l": 20,
-        "r": 20,
+        "l": 45,
+        "r": 25,
         "t": 30,
-        "b": 30,
+        "b": 45,
     },
     hovermode="x unified",
+    font={
+        "color": "#e2e8f0",
+    },
     xaxis={
         "title": "Forecast time",
         "showgrid": False,
+        "linecolor": "#475569",
     },
     yaxis={
         "title": "AQI",
-        "gridcolor": "rgba(148,163,184,0.08)",
+        "gridcolor": "#263852",
+        "zeroline": False,
+        "linecolor": "#475569",
     },
 )
 
@@ -507,21 +694,19 @@ st.plotly_chart(
 
 
 # ============================================================
-# THREE DAY SUMMARY
+# THREE-DAY OUTLOOK
 # ============================================================
 
 st.divider()
 
-st.header(
-    "📅 Three-Day Outlook"
-)
+st.header("📅 Three-Day Outlook")
 
-d1, d2, d3 = st.columns(3)
+day1, day2, day3 = st.columns(3)
 
 day_columns = {
-    "Day 1": d1,
-    "Day 2": d2,
-    "Day 3": d3,
+    "Day 1": day1,
+    "Day 2": day2,
+    "Day 3": day3,
 }
 
 for day_name, column in day_columns.items():
@@ -530,31 +715,34 @@ for day_name, column in day_columns.items():
         forecast["day"] == day_name
     ]
 
-    if day_df.empty:
-        continue
-
-    avg_day_pm25 = float(
-        day_df["pm25"].mean()
-    )
-
-    peak_day_pm25 = float(
-        day_df["pm25"].max()
-    )
-
-    peak_day_aqi = int(
-        day_df["aqi"].max()
-    )
-
-    category = (
-        day_df["aqi_category"]
-        .mode()
-        .iloc[0]
-    )
-
     with column:
 
-        st.subheader(
-            day_name
+        st.subheader(day_name)
+
+        if day_df.empty:
+
+            st.info(
+                "No forecast data available."
+            )
+
+            continue
+
+        avg_day_pm25 = float(
+            day_df["pm25"].mean()
+        )
+
+        peak_day_pm25 = float(
+            day_df["pm25"].max()
+        )
+
+        peak_day_aqi = int(
+            day_df["aqi"].max()
+        )
+
+        category = str(
+            day_df["aqi_category"]
+            .mode()
+            .iloc[0]
         )
 
         st.metric(
@@ -565,25 +753,26 @@ for day_name, column in day_columns.items():
 
         st.metric(
             "Average PM2.5",
-            f"{avg_day_pm25:.1f}",
-            "µg/m³",
+            f"{avg_day_pm25:.1f} µg/m³",
         )
 
         st.metric(
             "Peak PM2.5",
-            f"{peak_day_pm25:.1f}",
-            "µg/m³",
+            f"{peak_day_pm25:.1f} µg/m³",
         )
 
 
 # ============================================================
-# MODEL ROUTING
+# MODEL ROUTING TIMELINE
 # ============================================================
 
 st.divider()
 
-st.header(
-    "🧠 Forecast Decision Timeline"
+st.header("🧠 Forecast Decision Timeline")
+
+st.caption(
+    "Validation-selected model for each "
+    "forecast horizon."
 )
 
 timeline = go.Figure()
@@ -607,7 +796,7 @@ for model_name in [
             mode="markers",
             name=model_name,
             marker={
-                "size": 11,
+                "size": 12,
             },
             hovertemplate=(
                 "H+%{x}"
@@ -618,25 +807,30 @@ for model_name in [
     )
 
 timeline.update_layout(
-    height=280,
+    height=300,
     template="plotly_dark",
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(7,17,31,0.45)",
+    paper_bgcolor="#0f1b2d",
+    plot_bgcolor="#0f1b2d",
     margin={
-        "l": 20,
-        "r": 20,
-        "t": 20,
-        "b": 20,
+        "l": 45,
+        "r": 25,
+        "t": 25,
+        "b": 45,
+    },
+    font={
+        "color": "#e2e8f0",
     },
     xaxis={
         "title": "Forecast horizon",
         "dtick": 6,
         "range": [0, 73],
         "showgrid": False,
+        "linecolor": "#475569",
     },
     yaxis={
         "title": "Selected model",
         "showgrid": False,
+        "linecolor": "#475569",
     },
 )
 
@@ -647,14 +841,12 @@ st.plotly_chart(
 
 
 # ============================================================
-# FULL FORECAST TABLE
+# COMPLETE FORECAST TABLE
 # ============================================================
 
 st.divider()
 
-st.header(
-    "📋 Complete 72-Hour Forecast"
-)
+st.header("📋 Complete 72-Hour Forecast")
 
 table_df = forecast[
     [
@@ -678,6 +870,7 @@ st.dataframe(
     table_df,
     width="stretch",
     hide_index=True,
+    height=540,
     column_config={
         "timestamp": "Forecast time",
         "hour_ahead": "Horizon",
@@ -707,7 +900,7 @@ st.dataframe(
 st.divider()
 
 st.caption(
-    "AirSense-AI • Latest available production forecast • "
+    "AirSense-AI • Latest available forecast • "
     f"Source observation: "
     f"{latest_observation.strftime('%Y-%m-%d %H:%M UTC')} • "
     f"Forecast ends: "
