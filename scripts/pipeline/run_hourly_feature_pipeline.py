@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import os
@@ -89,13 +90,26 @@ def fetch_recent_openaq_data(
     params = {
         "datetime_from":
             start_time.isoformat(),
+
         "datetime_to":
             end_time.isoformat(),
+
         "limit": 100,
+
         "page": 1,
     }
 
     records = []
+
+    print(
+        f"OpenAQ sensor: {OPENAQ_SENSOR_ID}"
+    )
+
+    print(
+        "OpenAQ time window: "
+        f"{start_time.isoformat()} → "
+        f"{end_time.isoformat()}"
+    )
 
     while True:
 
@@ -115,8 +129,30 @@ def fetch_recent_openaq_data(
             []
         )
 
+        meta = payload.get(
+            "meta",
+            {}
+        )
+
+        print(
+            f"OpenAQ page {params['page']}: "
+            f"{len(results)} results"
+        )
+
         if not results:
+
+            print(
+                "OpenAQ returned no results for "
+                "the requested time window."
+            )
+
+            print(
+                f"OpenAQ metadata: {meta}"
+            )
+
             break
+
+        page_usable_records = 0
 
         for item in results:
 
@@ -162,16 +198,22 @@ def fetch_recent_openaq_data(
                 {
                     "timestamp":
                         timestamp,
+
                     "timestamp_end":
                         timestamp_end,
+
                     "city":
                         "Islamabad",
+
                     "country":
                         "PK",
+
                     "sensor_id":
                         OPENAQ_SENSOR_ID,
+
                     "pm25":
                         value,
+
                     "unit":
                         item.get(
                             "parameter",
@@ -179,6 +221,7 @@ def fetch_recent_openaq_data(
                         ).get(
                             "units"
                         ),
+
                     "coverage_percent":
                         item.get(
                             "coverage",
@@ -186,50 +229,61 @@ def fetch_recent_openaq_data(
                         ).get(
                             "percentCoverage"
                         ),
+
                     "minimum":
                         summary.get("min"),
+
                     "maximum":
                         summary.get("max"),
+
                     "average":
                         summary.get("avg"),
                 }
             )
 
-        meta = payload.get(
-            "meta",
-            {}
+            page_usable_records += 1
+
+        print(
+            f"OpenAQ page {params['page']}: "
+            f"{page_usable_records} usable PM2.5 records"
         )
 
-        found = meta.get("found")
+        # ----------------------------------------------------
+        # Pagination
+        #
+        # Continue only when the API returned a full page.
+        # This avoids comparing filtered records against
+        # OpenAQ's raw "found" count.
+        # ----------------------------------------------------
 
-        if found is not None:
-
-            try:
-                found = int(found)
-            except (
-                TypeError,
-                ValueError,
-            ):
-                found = None
-
-        # Determine pagination.
-        if (
-            found is not None
-            and len(records) >= found
-        ):
+        if len(results) < params["limit"]:
             break
 
         params["page"] += 1
 
-        # Safety guard: prevent an unexpected API response
-        # from creating an endless pagination loop.
+        # Safety guard
         if params["page"] > 100:
+            print(
+                "OpenAQ pagination safety limit reached."
+            )
             break
 
+    # --------------------------------------------------------
+    # No usable records
+    # --------------------------------------------------------
+
     if not records:
+
         raise RuntimeError(
-            "OpenAQ returned no recent PM2.5 records."
+            "OpenAQ returned no usable recent PM2.5 "
+            f"records for sensor {OPENAQ_SENSOR_ID} "
+            f"between {start_time.isoformat()} and "
+            f"{end_time.isoformat()}."
         )
+
+    # --------------------------------------------------------
+    # Build DataFrame
+    # --------------------------------------------------------
 
     df = pd.DataFrame(
         records
@@ -260,6 +314,10 @@ def fetch_recent_openaq_data(
             errors="coerce",
         )
 
+    # --------------------------------------------------------
+    # Clean records
+    # --------------------------------------------------------
+
     df = (
         df.dropna(
             subset=[
@@ -271,9 +329,24 @@ def fetch_recent_openaq_data(
             subset=["timestamp"],
             keep="last",
         )
-        .sort_values("timestamp")
-        .reset_index(drop=True)
+        .sort_values(
+            "timestamp"
+        )
+        .reset_index(
+            drop=True
+        )
     )
+
+    # --------------------------------------------------------
+    # Final validation
+    # --------------------------------------------------------
+
+    if df.empty:
+
+        raise RuntimeError(
+            "OpenAQ returned records, but none contained "
+            "a valid timestamp and PM2.5 value."
+        )
 
     return df
 
@@ -310,6 +383,7 @@ def connect_feature_store():
     )
 
     if project.name != project_name:
+
         raise RuntimeError(
             f"Connected to unexpected project: "
             f"{project.name}"
@@ -357,7 +431,6 @@ def cast_to_feature_group_schema(
 
     # --------------------------------------------------------
     # Timestamp
-    # Event-time column remains datetime.
     # --------------------------------------------------------
 
     df["timestamp"] = pd.to_datetime(
@@ -388,7 +461,9 @@ def cast_to_feature_group_schema(
     df["sensor_id"] = pd.to_numeric(
         df["sensor_id"],
         errors="raise",
-    ).astype("float64")
+    ).astype(
+        "float64"
+    )
 
     # --------------------------------------------------------
     # BIGINT columns
@@ -412,7 +487,9 @@ def cast_to_feature_group_schema(
             df[column] = pd.to_numeric(
                 df[column],
                 errors="raise",
-            ).astype("int64")
+            ).astype(
+                "int64"
+            )
 
     # --------------------------------------------------------
     # Floating-point columns
@@ -464,7 +541,9 @@ def cast_to_feature_group_schema(
             df[column] = pd.to_numeric(
                 df[column],
                 errors="coerce",
-            ).astype("float64")
+            ).astype(
+                "float64"
+            )
 
     return df
 
@@ -472,12 +551,20 @@ def cast_to_feature_group_schema(
 def run():
 
     print("=" * 70)
+
     print(
         "AIRSENSE-AI — HOURLY FEATURE PIPELINE"
     )
+
     print("=" * 70)
 
-    print("\n[1/5] Fetching recent OpenAQ data...")
+    # ========================================================
+    # STEP 1
+    # ========================================================
+
+    print(
+        "\n[1/5] Fetching recent OpenAQ data..."
+    )
 
     raw_df = fetch_recent_openaq_data()
 
@@ -491,6 +578,10 @@ def run():
         "→",
         raw_df["timestamp"].max(),
     )
+
+    # ========================================================
+    # STEP 2
+    # ========================================================
 
     print(
         "\n[2/5] Building forecasting features..."
@@ -520,10 +611,15 @@ def run():
     ]
 
     if missing:
+
         raise RuntimeError(
             f"Feature engineering failed. "
             f"Missing: {missing}"
         )
+
+    # ========================================================
+    # STEP 3
+    # ========================================================
 
     print(
         "\n[3/5] Connecting to Hopsworks..."
@@ -538,6 +634,10 @@ def run():
         project.name
     )
 
+    # ========================================================
+    # STEP 4
+    # ========================================================
+
     print(
         "\n[4/5] Loading Feature Group..."
     )
@@ -551,6 +651,10 @@ def run():
         f"{FEATURE_GROUP_NAME} "
         f"v{FEATURE_GROUP_VERSION}"
     )
+
+    # ========================================================
+    # STEP 5
+    # ========================================================
 
     print(
         "\n[5/5] Inserting new feature rows..."
@@ -673,11 +777,21 @@ def run():
             "Feature insertion completed."
         )
 
-    print("\n" + "=" * 70)
+    # ========================================================
+    # COMPLETE
+    # ========================================================
+
+    print(
+        "\n" + "=" * 70
+    )
+
     print(
         "HOURLY FEATURE PIPELINE COMPLETE"
     )
-    print("=" * 70)
+
+    print(
+        "=" * 70
+    )
 
     print(
         "Latest source timestamp:",
@@ -692,3 +806,4 @@ def run():
 
 if __name__ == "__main__":
     run()
+
