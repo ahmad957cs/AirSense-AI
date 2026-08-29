@@ -250,10 +250,6 @@ def fetch_recent_openaq_data(
 
         # ----------------------------------------------------
         # Pagination
-        #
-        # Continue only when the API returned a full page.
-        # This avoids comparing filtered records against
-        # OpenAQ's raw "found" count.
         # ----------------------------------------------------
 
         if len(results) < params["limit"]:
@@ -274,12 +270,12 @@ def fetch_recent_openaq_data(
 
     if not records:
 
-        raise RuntimeError(
-            "OpenAQ returned no usable recent PM2.5 "
-            f"records for sensor {OPENAQ_SENSOR_ID} "
-            f"between {start_time.isoformat()} and "
-            f"{end_time.isoformat()}."
+        print(
+            "\nNo new OpenAQ PM2.5 records are available "
+            f"for sensor {OPENAQ_SENSOR_ID}."
         )
+
+        return pd.DataFrame()
 
     # --------------------------------------------------------
     # Build DataFrame
@@ -343,10 +339,12 @@ def fetch_recent_openaq_data(
 
     if df.empty:
 
-        raise RuntimeError(
-            "OpenAQ returned records, but none contained "
+        print(
+            "\nOpenAQ returned records, but none contained "
             "a valid timestamp and PM2.5 value."
         )
+
+        return pd.DataFrame()
 
     return df
 
@@ -568,6 +566,39 @@ def run():
 
     raw_df = fetch_recent_openaq_data()
 
+    # --------------------------------------------------------
+    # No new source data is not a pipeline failure.
+    # Preserve existing Feature Group data and exit cleanly.
+    # --------------------------------------------------------
+
+    if raw_df.empty:
+
+        print(
+            "\nNo new source data available."
+        )
+
+        print(
+            "Existing Feature Group data remains unchanged."
+        )
+
+        print(
+            "\n" + "=" * 70
+        )
+
+        print(
+            "HOURLY FEATURE PIPELINE COMPLETE"
+        )
+
+        print(
+            "=" * 70
+        )
+
+        print(
+            "Status: No new OpenAQ observations to process."
+        )
+
+        return
+
     print(
         f"Raw rows: {len(raw_df)}"
     )
@@ -659,13 +690,6 @@ def run():
     print(
         "\n[5/5] Inserting new feature rows..."
     )
-
-    # --------------------------------------------------------
-    # Only insert rows that are not already present.
-    #
-    # We use the Feature View batch data as the authoritative
-    # production check rather than relying on a local CSV.
-    # --------------------------------------------------------
 
     feature_view = (
         fs.get_feature_view(
