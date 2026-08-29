@@ -35,7 +35,7 @@ The deployed application provides an interactive interface for:
 
 ### Complete Project Report
 
-**[📑 View Complete Project Report — TO BE ADDED](https://docs.google.com/document/d/1g2WSRWkwDVfOJpO8dbFkVZo9s9S7v-wx/edit?usp=sharing&ouid=103094263755262699172&rtpof=true&sd=true)**
+**[📑 View Complete Project Report ](https://docs.google.com/document/d/1g2WSRWkwDVfOJpO8dbFkVZo9s9S7v-wx/edit?usp=sharing&ouid=103094263755262699172&rtpof=true&sd=true)**
 
 The final report will document the complete methodology, data pipeline, feature engineering, model development, evaluation, model selection, system architecture, deployment, limitations, and conclusions.
 
