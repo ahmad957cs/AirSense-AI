@@ -13,12 +13,11 @@ permissions:
 jobs:
   hourly-feature-pipeline:
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
 
     env:
       OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
-      OPENAQ_SENSOR_ID: "13137731"
+      OPENAQ_SENSOR_ID: ${{ secrets.OPENAQ_SENSOR_ID }}
 
       HOPSWORKS_HOST: eu-west.cloud.hopsworks.ai
       HOPSWORKS_PROJECT: AirSense_AI
@@ -27,7 +26,6 @@ jobs:
       PYTHONUNBUFFERED: "1"
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v6
 
@@ -69,16 +67,8 @@ jobs:
           print("Required environment variables are present.")
           print("OpenAQ sensor:", os.environ["OPENAQ_SENSOR_ID"])
           print("Hopsworks project:", os.environ["HOPSWORKS_PROJECT"])
-
-          print(
-              "OpenAQ key length:",
-              len(os.environ["OPENAQ_API_KEY"])
-          )
-
-          print(
-              "Hopsworks key length:",
-              len(os.environ["HOPSWORKS_API_KEY"])
-          )
+          print("OpenAQ key length:", len(os.environ["OPENAQ_API_KEY"]))
+          print("Hopsworks key length:", len(os.environ["HOPSWORKS_API_KEY"]))
           PY
 
       - name: Validate OpenAQ credentials
@@ -87,11 +77,12 @@ jobs:
           import os
           import requests
 
-          api_key = os.environ.get("OPENAQ_API_KEY", "")
+          api_key = os.environ["OPENAQ_API_KEY"]
           sensor_id = os.environ["OPENAQ_SENSOR_ID"]
 
           print("GitHub OpenAQ key present:", bool(api_key))
           print("GitHub OpenAQ key length:", len(api_key))
+          print("OpenAQ sensor:", sensor_id)
 
           url = (
               f"https://api.openaq.org/v3/"
